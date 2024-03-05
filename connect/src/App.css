@@ -1,38 +1,78 @@
-.App {
-  text-align: center;
+.bg-off-white 
+{
+  background-color: rgb(240,240,240);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.flex_col_center 
+{
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+.flex_row_center 
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.dropdown-style 
+{
+  outline: none !important;
+  color: black !important;
+  border: none !important;
+  background-color: rgb(240,240,240) !important;
+}
+
+.dropdown-style:hover 
+{
+  background-color: white !important;
+}
+
+.dropdown-style:focus
+{
+  background-color: rgb(240,240,240) !important;
+}
+
+.bg-grey 
+{
+  background-color: grey;
+}
+
+.bg-light-grey 
+{
+  background-color: rgb(180,180,180);
+}
+
+@keyframes shaking 
+{
+  0%, 100% {
+    transform: translateX(0);
   }
-  to {
-    transform: rotate(360deg);
+  25%, 75% {
+    transform: translateX(-5px);
   }
+  50% {
+    transform: translateX(5px);
+  }
+}
+
+.shake 
+{
+animation: shaking 0.5s ease-in-out;
+}
+
+.button 
+{
+  background-color:  rgb(240,240,240);
+  border: none;
+}
+
+.button:hover 
+{
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5%;
 }
