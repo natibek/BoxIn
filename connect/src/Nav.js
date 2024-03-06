@@ -25,7 +25,7 @@ export default function Nav({ page }){
 
                     <Dropdown.Menu>                
                         <Dropdown.Item onClick={ () => { navigate("/") } }> <i className="bi bi-house"></i> <> &nbsp; Home</> </Dropdown.Item>   
-                        <Dropdown.Item onClick={ () => { navigate("/play") } }> <i className="bi bi-bounding-box-circles"></i> <> &nbsp; Play</> </Dropdown.Item>   
+                        <Dropdown.Item onClick={ () => { navigate("/play") } }> <i className="bi bi-bounding-box-circles"></i> <> &nbsp; New Game</> </Dropdown.Item>   
                         <Dropdown.Item onClick={ () => { navigate("/multiplayer") } }> <i className="bi bi-router"></i> <> &nbsp; Multiplayer</> </Dropdown.Item>   
                         <Dropdown.Item onClick={ handleInstructions }> <i className="bi bi-question"> </i> <>&nbsp; Instructions</></Dropdown.Item>                     
                     </Dropdown.Menu>

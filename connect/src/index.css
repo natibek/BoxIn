@@ -25,11 +25,34 @@ code {
   align-items: center;
 }
 
+.flex_col_start
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
 .flex_row_center 
 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.gap_10
+{
+  gap: 10px;
+}
+
+.gap_15
+{
+  gap: 15px;
+}
+
+.gap_20
+{
+  gap: 20px;
 }
 
 .dropdown-style 
