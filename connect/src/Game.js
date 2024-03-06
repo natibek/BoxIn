@@ -11,16 +11,11 @@ export default function Game()
     const [ solved, set_solved ] = useState(false);
 
 
-
-    
     return (
         <>
-        <div className="shadow-lg flex_row_center">
+        <div className="shadow-lg">
             <div>
-                {
-                    
-                }
-
+                My name is someone else;
             </div>
         </div>
 
