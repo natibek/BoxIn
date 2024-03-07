@@ -5,7 +5,7 @@
 
   --bar-height: 38px;
   --bar-width: 10px;
-  --bar-color: rgb(107, 170,255);
+  --bar-color: rgb(107, 170, 255);
   --bar-offset-main: -12px;
   --bar-offset-minor: 1px;
 
@@ -67,7 +67,7 @@ code
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .flex_row_center 

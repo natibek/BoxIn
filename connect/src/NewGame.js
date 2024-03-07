@@ -30,7 +30,11 @@ export default function NewGame()
 
                 })
             );
-            navigate('/play');
+            
+            localStorage.setItem('board', JSON.stringify(null));
+            setTimeout(() => {
+                navigate('/play');                
+            }, 100);
         }
         else 
         {
@@ -52,13 +56,13 @@ export default function NewGame()
     const handleNumInput = (e) => {
         const regex=/^[0-9]+$/;
         
-        if (e.target.value.match(regex)|| e.target.value == ''){ set_num_players(e.target.value); }
+        if (e.target.value.match(regex)|| e.target.value === ''){ set_num_players(e.target.value); }
 
     };
 
     const handleSizeInput = (e) => {
         const regex=/^[0-9]+$/;
-        if (e.target.value.match(regex) || e.target.value == ''){ set_size(e.target.value); }
+        if (e.target.value.match(regex) || e.target.value === ''){ set_size(e.target.value); }
 
     };
 
