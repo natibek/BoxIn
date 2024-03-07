@@ -36,10 +36,10 @@ export default function Play()
     // }, [])
 
     return (
-        <div className="flex_col_center" style={{height: '100%'}}>
+        <div className="flex_col_center" style={{minHeight: "100%"}}>
             <Nav  page={"Play"} />
 
-            <div className="flex_col_center" style={{width: "100%", flexGrow: 1}}>    
+            <div className="flex_col_center" style={{width: "100%"}}>    
                 <Game />                     
             </div>
             <Footer />

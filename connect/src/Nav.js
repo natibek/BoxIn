@@ -22,7 +22,7 @@ export default function Nav({ page }){
 
     return (
         <div className='flex_row_center p-4 bg-white border-bottom w-100 nav' style={{height: 'fit-content'}}>
-
+            
             <div className='position-absolute' style={{left: "50px"}}>
                 <Dropdown>
                     <Dropdown.Toggle className="dropdown-style btn bg-off-white">

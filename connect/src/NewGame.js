@@ -67,10 +67,10 @@ export default function NewGame()
     };
 
     return (
-        <div className="flex_col_center position-relative" style={{height: '100%'}}>
+        <div className="flex_col_center" style={{minHeight: "100%"}}>
             <Nav  page={"Play"} />
             
-            <div className="flex_col_center" style={{width: "100%", flexGrow: 1}}>       
+            <div className="flex_col_center" style={{width: "100%"}}>       
                 <div className="shadow-lg flex_col_center gap_20 px-2 py-5 m-4 rounded" style={{minHeight : '150px', width : '30%', minWidth: 'fit-content'}}>            
                     
                     <h3>Game Setup</h3>

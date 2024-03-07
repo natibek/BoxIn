@@ -36,6 +36,36 @@ export default function Game()
 
     const is_first_col = (ind) =>  ind % (game_params.size - 1) === 0;
     const is_last_row = (ind) => Math.floor(ind / (game_params.size - 1)) === (game_params.size - 2);
+    
+    const get_row_col = (ind, side) => {
+        let pos1, pos2;
+        const row_inner = Math.floor(ind / (game_params.size - 1));
+        const col_inner = ind % (game_params.size - 1);
+
+        switch(side){
+            case 'up':
+                pos1 = ind + row_inner;
+                pos2 = pos1 + 1;
+                break;
+            case "down":
+                pos1 = ind + row_inner + game_params.size;
+                pos2 = pos1 + 1;    
+                break;
+            case "right":
+                pos1 = ind + 1 + row_inner;
+                pos2 = pos1 + game_params.size;
+                break;
+            case "left":
+                pos1 = ind + row_inner;
+                pos2 = pos1 + game_params.size;
+                break;
+        }
+
+        const row1 = Math.floor(pos1 / (game_params.size))
+        const col1 = pos1 % (game_params.size)
+        
+        return [pos1, pos2, row1, col1]
+    }
 
     const handleClick = (e) => {
         const bar = e.target;
@@ -43,30 +73,10 @@ export default function Game()
         if (bar.style.backgroundColor === "")
         {
             const ind = Number(e.target.parentNode.id);
-            const row_inner = Math.floor(ind / (game_params.size - 1));
-            const col_inner = ind % (game_params.size - 1);
-            let pos1, pos2;
+            
+            let [pos1, pos2, ..._] = get_row_col(ind, bar.className)
 
-            switch(bar.className){
-                case 'up':
-                    pos1 = ind + row_inner;
-                    pos2 = pos1 + 1;
-                    break;
-                case "down":
-                    pos1 = ind + row_inner + game_params.size;
-                    pos2 = pos1 + 1;    
-                    break;
-                case "right":
-                    pos1 = ind + 1 + row_inner;
-                    pos2 = pos1 + game_params.size;
-                    break;
-                case "left":
-                    pos1 = ind + row_inner;
-                    pos2 = pos1 + game_params.size;
-                    break;
-            }
             console.log(pos1, pos2, "pos");
-            console.log(typeof game)
             const state = game.apply_move(pos1, pos2);
             localStorage.setItem('board', JSON.stringify(game));
 
@@ -77,15 +87,10 @@ export default function Game()
             {   
                 if (state.length > 0)
                 {
-                    const text = document.createTextNode(String(game.turn));
-                    for (const close_dir of state)
+                    for (let close_dir of state)
                     {
-                        const closed = document.getElementById(String(close_dir));
-                        closed.appendChild(text);
-                        // console.log(closed)
-                        
-                        // closed.textContent = game.turn;
-
+                        const text = document.createTextNode(String(game.turn));
+                        document.getElementById(String(close_dir)).appendChild(text);                            
                     }
                 }
 
@@ -97,7 +102,7 @@ export default function Game()
 
     return (
         <>
-        <div className="flex_col_center w-75 h-75 p-5 position-relative" style={{width: 'fit-content', height: 'fit-content'}}>
+        <div className="flex_col_center p-5" style={{width: 'fit-content', height: 'fit-content'}}>
             {
                 game ? 
                     <div className="grid_display" style={{'--num-cols': game_params.size - 1}}>
@@ -105,11 +110,25 @@ export default function Game()
                             game.box_1d.map((name,ind) => (
                                 <div key = {ind} id={ind} className="box flex_col_center">
                                     { name ? name : '' }
-                                    <div onClick={handleClick} className="up" style={{backgroundColor: `${name ? 'rgb(107, 170, 255)': ''}`, borderStyle: `${name ? 'none': 'dashed'}`}}></div>
-                                    <div onClick={handleClick} className="right" style={{backgroundColor: `${name ? 'rgb(107, 170, 255)': ''}`,  borderStyle: `${name ? 'none': 'dashed'}`}}></div>
-                                    { is_first_col(ind) ? <div onClick={handleClick} className="left" style={{backgroundColor: `${name ? 'rgb(107, 170, 255)': ''}`, borderStyle: `${name ? 'none': 'dashed'}`}}></div> : <></> }
-                                    { is_last_row(ind) ? <div  onClick={handleClick} className="down" style={{backgroundColor: `${name ? 'rgb(107, 170, 255)': ''}`,  borderStyle: `${name ? 'none': 'dashed'}`}}></div> : <></> }
+                                    <div onClick={handleClick} className="up" 
+                                        style={{
+                                            backgroundColor: `${ game.board[get_row_col(ind, "up")[2]][get_row_col(ind, "up")[3]].right ? 'rgb(107, 170, 255)': ''}`, 
+                                            borderStyle: `${game.board[get_row_col(ind, "up")[2]][get_row_col(ind, "up")[3]].right ? 'none': 'dashed'}`}}></div>
+
+                                    <div onClick={handleClick} className="right" 
+                                        style={{
+                                            backgroundColor: `${game.board[get_row_col(ind, "right")[2]][get_row_col(ind, "right")[3]].down ? 'rgb(107, 170, 255)': ''}`,  
+                                            borderStyle: `${game.board[get_row_col(ind, "right")[2]][get_row_col(ind, "right")[3]].down ? 'none': 'dashed'}`}}></div>
                                     
+                                    { is_first_col(ind) ? <div onClick={handleClick} className="left" 
+                                        style={{
+                                            backgroundColor: `${game.board[get_row_col(ind, "left")[2]][get_row_col(ind, "left")[3]].down ? 'rgb(107, 170, 255)': ''}`, 
+                                            borderStyle: `${game.board[get_row_col(ind, "left")[2]][get_row_col(ind, "left")[3]].down ? 'none': 'dashed'}`}}></div> : <></> }
+
+                                    { is_last_row(ind) ? <div  onClick={handleClick} className="down"  
+                                         style={{
+                                            backgroundColor: `${game.board[get_row_col(ind, "down")[2]][get_row_col(ind, "down")[3]].right ? 'rgb(107, 170, 255)': ''}`,  
+                                            borderStyle: `${game.board[get_row_col(ind, "down")[2]][get_row_col(ind, "down")[3]].right ? 'none': 'dashed'}`}}></div> : <></> }
 
                                     <div className="top-right"></div>
 
