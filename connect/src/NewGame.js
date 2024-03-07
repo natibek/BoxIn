@@ -1,9 +1,9 @@
 
 import Footer from "./Footer";
 import Nav from "./Nav";
-import Game from "./Game";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { GameParamsCxt } from "./App";
 
 export default function NewGame()
 {
@@ -14,13 +14,22 @@ export default function NewGame()
     const [ input_error_num, set_input_error_num ] = useState(false);
     const [ warn_size, set_warn_size ] = useState(false);
     const [ warn_num, set_warn_num ] = useState(false);
-
+    const { game_params, set_game_params } = useContext(GameParamsCxt);
     const navigate = useNavigate();
 
     
     const handleGameSetting = () => {    
         if (Number(size) >= 5 && Number(size) <= 30 && Number(num_players) >= 2 && Number(num_players) <= 8)
         {   
+            set_game_params(
+                (prev) => 
+                ({
+                    ...prev,
+                    size: Number(size),
+                    num_players: Number(num_players)
+
+                })
+            );
             navigate('/play');
         }
         else 
@@ -54,7 +63,7 @@ export default function NewGame()
     };
 
     return (
-        <div className="flex_col_center" style={{height: '100vh'}}>
+        <div className="flex_col_center position-relative" style={{height: '100%'}}>
             <Nav  page={"Play"} />
             
             <div className="flex_col_center" style={{width: "100%", flexGrow: 1}}>       
@@ -93,7 +102,7 @@ export default function NewGame()
                 
             </div>
 
-                <Footer />
+            <Footer />
 
         </div>
     );

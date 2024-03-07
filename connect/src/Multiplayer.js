@@ -4,9 +4,9 @@ import Nav from "./Nav";
 export default function Multiplayer()
 {
     return (
-        <div className="flex_col_center" style={{height: '100vh'}}>
+        <div className="flex_col_center">
         <Nav page={"Multiplayer"} />
-        <div className="flex_col_center" style={{ width: "100%", flexGrow: 1}}>
+        <div className="flex_col_center" style={{ width: "100%"}}>
 
         </div>
         <Footer />

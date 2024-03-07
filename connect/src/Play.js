@@ -42,10 +42,10 @@ export default function Play()
     // }, [])
 
     return (
-        <div className="flex_col_center" style={{height: '100vh'}}>
+        <div className="flex_col_center" >
             <Nav  page={"Play"} />
-
             <div className="flex_col_center" style={{width: "100%", flexGrow: 1}}>
+                
                 <Game />                     
             </div>
 
