@@ -3,34 +3,55 @@ import { GameParamsCxt } from "./App";
 import Board from "./game_logic";
 import { useNavigate } from "react-router-dom";
 
+const colorScheme = [
+    "rgb(107, 170, 255)",
+    "#EEE8A9",
+    "#00c9b7",
+    "#D955DD",
+    "#FF8A72",
+    "#A3A5DB",
+    "#FF5774",
+    "#BFA5A5"
+];
+
+const r = document.querySelector(':root');
+
 export default function Game()
 {
     const [ game, set_game ] = useState();
     const { game_params, set_game_params } = useContext(GameParamsCxt);
     const navigate = useNavigate();
-
-
+    
+    
     useEffect(() => {
         const cached = JSON.parse(localStorage.getItem('board'));
         console.log(game_params, cached)
         if ( cached )
         {
             console.log("CACHED")
-            set_game_params( {size: cached.size, num_players: cached.num_players} );
+            set_game_params( {size: cached.size, num_players: cached.num_players, names: cached.names} );
 
-            const new_board = new Board(cached.num_players, cached.size, cached.board, cached.box_1d, cached.turn)
+            const new_board = new Board(cached.num_players, cached.size, cached.names, cached.board, cached.box_1d, cached.turn)
             set_game( new_board );
+            // set_turn( {now: cached.names[cached.turn - 1]});
+            r.style.setProperty('--hover-color', colorScheme[cached.turn - 1])
             setTimeout(() => {
-                console.log('wait')
-                console.log( new_board , game)
+                document.getElementById("turn").textContent = cached.names[cached.turn - 1];
             }, 100);
+            console.log('CACHED GAME')
         }
         else if (game_params.size && game_params.num_players){
-            let new_board = new Board( game_params.num_players, game_params.size );
+            let new_board = new Board( game_params.num_players, game_params.size, game_params.names );
             set_game( new_board );
+            r.style.setProperty('--hover-color', colorScheme[0])
+
+            // set_turn( {now: new_board.names[new_board.turn - 1]});
             localStorage.setItem('board', JSON.stringify(new_board));
-            console.log('NEW GAME')
-            
+
+            setTimeout(() => {
+                document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];            
+            }, 100);
+            console.log('NEW GAME')            
         }
     }, [])
 
@@ -77,11 +98,13 @@ export default function Game()
             let [pos1, pos2, ..._] = get_row_col(ind, bar.className)
 
             console.log(pos1, pos2, "pos");
+
+            bar.style.backgroundColor = colorScheme[game.turn - 1];
+            bar.style.borderStyle = 'none';
+
             const state = game.apply_move(pos1, pos2);
             localStorage.setItem('board', JSON.stringify(game));
-
-            bar.style.backgroundColor = 'rgb(107, 170, 255)';
-            bar.style.borderStyle = 'none';
+            r.style.setProperty('--hover-color', colorScheme[game.turn - 1])
 
             if (typeof state === 'object')  
             {   
@@ -89,22 +112,39 @@ export default function Game()
                 {
                     for (let close_dir of state)
                     {
-                        const text = document.createTextNode(String(game.turn));
-                        document.getElementById(String(close_dir)).appendChild(text);                            
+                        console.log(game_params.names[game.turn - 1], "BOX")
+                        const text = document.createTextNode(game.names[game.turn - 1]);
+                        document.getElementById(String(close_dir)).appendChild(text);      
                     }
                 }
-
             }
-
+            document.getElementById("turn").textContent = game.names[game.turn - 1];
         }
-
     };
+
+    const is_connected = (ind, dir) => 
+    {
+        switch(dir)
+        {
+            case "up":
+            case "down":
+                return game.board[get_row_col(ind, dir)[2]][get_row_col(ind, dir)[3]].right
+
+            case "left":
+            case "right":
+                return game.board[get_row_col(ind, dir)[2]][get_row_col(ind, dir)[3]].down
+        }
+    }
 
     return (
         <>
         <div className="flex_col_center p-5" style={{width: 'fit-content', height: 'fit-content'}}>
             {
                 game ? 
+                    <>
+                    <div className="p-3 fs-3" id="turn">                        
+                    </div>
+
                     <div className="grid_display" style={{'--num-cols': game_params.size - 1}}>
                         { 
                             game.box_1d.map((name,ind) => (
@@ -112,23 +152,23 @@ export default function Game()
                                     { name ? name : '' }
                                     <div onClick={handleClick} className="up" 
                                         style={{
-                                            backgroundColor: `${ game.board[get_row_col(ind, "up")[2]][get_row_col(ind, "up")[3]].right ? 'rgb(107, 170, 255)': ''}`, 
-                                            borderStyle: `${game.board[get_row_col(ind, "up")[2]][get_row_col(ind, "up")[3]].right ? 'none': 'dashed'}`}}></div>
+                                            backgroundColor: `${ is_connected(ind, "up") ? colorScheme[is_connected(ind, "up") - 1] : ''}`, 
+                                            borderStyle: `${is_connected(ind, "up") ? 'none': 'dashed'}`}}></div>
 
                                     <div onClick={handleClick} className="right" 
                                         style={{
-                                            backgroundColor: `${game.board[get_row_col(ind, "right")[2]][get_row_col(ind, "right")[3]].down ? 'rgb(107, 170, 255)': ''}`,  
-                                            borderStyle: `${game.board[get_row_col(ind, "right")[2]][get_row_col(ind, "right")[3]].down ? 'none': 'dashed'}`}}></div>
+                                            backgroundColor: `${is_connected(ind, "right") ? colorScheme[is_connected(ind, "right") - 1]: ''}`,  
+                                            borderStyle: `${is_connected(ind, "right") ? 'none': 'dashed'}`}}></div>
                                     
                                     { is_first_col(ind) ? <div onClick={handleClick} className="left" 
                                         style={{
-                                            backgroundColor: `${game.board[get_row_col(ind, "left")[2]][get_row_col(ind, "left")[3]].down ? 'rgb(107, 170, 255)': ''}`, 
-                                            borderStyle: `${game.board[get_row_col(ind, "left")[2]][get_row_col(ind, "left")[3]].down ? 'none': 'dashed'}`}}></div> : <></> }
+                                            backgroundColor: `${is_connected(ind, "left") ? colorScheme[is_connected(ind, "left") - 1]: ''}`, 
+                                            borderStyle: `${is_connected(ind, "left") ? 'none': 'dashed'}`}}></div> : <></> }
 
                                     { is_last_row(ind) ? <div  onClick={handleClick} className="down"  
                                          style={{
-                                            backgroundColor: `${game.board[get_row_col(ind, "down")[2]][get_row_col(ind, "down")[3]].right ? 'rgb(107, 170, 255)': ''}`,  
-                                            borderStyle: `${game.board[get_row_col(ind, "down")[2]][get_row_col(ind, "down")[3]].right ? 'none': 'dashed'}`}}></div> : <></> }
+                                            backgroundColor: `${ is_connected(ind, "down") ? colorScheme[is_connected(ind, "down") - 1]: ''}`,  
+                                            borderStyle: `${ is_connected(ind, "down") ? 'none': 'dashed'}`}}></div> : <></> }
 
                                     <div className="top-right"></div>
 
@@ -141,11 +181,10 @@ export default function Game()
                             ))
                         }
                     </div>
-
+                    </>
                 :
                     
                     <button onClick={() => { navigate('/new') }} className="button bg-off-white p-4 rounded shadow-lg">Create New Game</button>
-
             }
         </div>
         </>

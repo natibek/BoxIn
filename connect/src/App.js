@@ -9,7 +9,7 @@ import Multiplayer from './Multiplayer';
 export const GameParamsCxt = createContext();
 
 const GameParamsProvider = ({ children }) => {
-  const [ game_params, set_game_params ] = useState( {size: null, num_players: null} );
+  const [ game_params, set_game_params ] = useState( {size: null, num_players: null, names: []} );
   const value = { game_params, set_game_params };
 
   return (

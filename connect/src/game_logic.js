@@ -12,10 +12,11 @@ class Vertex {
 
 export default class Board{
 
-    constructor(num_players, size, old_board = null, old_board_1d = null, turn = 1)
+    constructor(num_players, size, names, old_board = null, old_board_1d = null, turn = 1)
     {
         this.num_players = num_players; 
         this.size = size;
+        this.names = names.map((name, ind) => (name === "" ? String(ind + 1) : name));
         if (old_board) this.board = old_board;
         else
         {
@@ -105,7 +106,7 @@ export default class Board{
                 // console.log(left_boxed, "left")
                 if (left_boxed) {
                     let ind = row1 * (this.size - 1) + (col1 - 1);
-                    this.box_1d[ind] = this.turn;
+                    this.box_1d[ind] = this.names[this.turn - 1];
                     // this.box[row1][col1-1] = this.turn;
                     state.push(ind)
                     console.log('box left');
@@ -119,7 +120,7 @@ export default class Board{
                 // console.log(right_boxed, "right")
                 if (right_boxed) {
                     let ind = row1 * (this.size - 1) + col1;
-                    this.box_1d[ind] = this.turn;
+                    this.box_1d[ind] = this.names[this.turn - 1];
 
                     // this.box[row1][col1] = this.turn;
                     state.push(ind)
@@ -142,7 +143,7 @@ export default class Board{
                 up_boxed = this.board[row1][col1].up && this.board[row2][col2].up && this.board[row1-1][col1].right;
                 if (up_boxed) {
                     let ind = (row1-1) * (this.size - 1) + col1
-                    this.box_1d[ind] = this.turn;
+                    this.box_1d[ind] = this.names[this.turn - 1];
                     // this.box[row1-1][col1] = this.turn;
                     state.push(ind);
                     console.log('box up')
@@ -156,7 +157,7 @@ export default class Board{
                 down_boxed = this.board[row1][col1].down && this.board[row2][col2].down && this.board[row1+1][col1].right
                 if (down_boxed) {
                     let ind = row1 * (this.size - 1) + col1
-                    this.box_1d[ind] = this.turn;
+                    this.box_1d[ind] = this.names[this.turn - 1];
                     // this.box[row1][col1] = this.turn;
                     state.push(ind);
                     console.log('box down')
@@ -181,13 +182,13 @@ export default class Board{
         {
             if(this.is_vert([row1, col1], [row2, col2]))
             {
-                this.board[row1][col1].down = true;
-                this.board[row2][col2].up = true;
+                this.board[row1][col1].down = this.turn;
+                this.board[row2][col2].up = this.turn;
             }
             else
             {
-                this.board[row1][col1].right = true;
-                this.board[row2][col2].left = true;
+                this.board[row1][col1].right = this.turn;
+                this.board[row2][col2].left = this.turn;
             }
         }
         else return false;

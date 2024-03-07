@@ -5,17 +5,16 @@
 
   --bar-height: 38px;
   --bar-width: 10px;
-  --bar-color: rgb(107, 170, 255);
+  --hover-color: rgb(107, 170, 255);
   --bar-offset-main: -12px;
   --bar-offset-minor: 1px;
 
-  --corner-offest: -14px;
-  
+  --corner-offest: -14px; 
 }
 
 html
 {
-  height: 100%;
+  min-height: 100vh;
 }
 
 body 
@@ -26,9 +25,13 @@ body
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 100%;
+  min-height: 100vh;
 }
 
+#root
+{
+  min-height: 100vh;
+}
 
 code 
 {
@@ -40,7 +43,6 @@ code
   position: sticky;
   top: 0;
   z-index: 1;
-  margin-bottom: auto;
 }
 
 .footer 
@@ -212,7 +214,7 @@ animation: shaking 0.5s ease-in-out;
 .left:hover
 {
   border: none;
-  background-color: var(--bar-color);
+  background-color: var(--hover-color);
 }
 
 .top-left,

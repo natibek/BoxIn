@@ -9,16 +9,18 @@ export default function NewGame()
 {
     const [ num_players, set_num_players ] = useState("");
     const [ size, set_size ] = useState("");
-
     const [ input_error_size, set_input_error_size ] = useState(false);
     const [ input_error_num, set_input_error_num ] = useState(false);
     const [ warn_size, set_warn_size ] = useState(false);
     const [ warn_num, set_warn_num ] = useState(false);
+    const [ temp_names, set_temp_names ] = useState([]);
+
     const { game_params, set_game_params } = useContext(GameParamsCxt);
     const navigate = useNavigate();
 
     
-    const handleGameSetting = () => {    
+    const handleGameSetting = () => 
+    {    
         if (Number(size) >= 5 && Number(size) <= 30 && Number(num_players) >= 2 && Number(num_players) <= 8)
         {   
             set_game_params(
@@ -26,8 +28,8 @@ export default function NewGame()
                 ({
                     ...prev,
                     size: Number(size),
-                    num_players: Number(num_players)
-
+                    num_players: Number(num_players),
+                    names: temp_names
                 })
             );
             
@@ -44,6 +46,7 @@ export default function NewGame()
             set_warn_size((!size.match(regex) || Number(size) < 5 || Number(size) > 30))
             set_input_error_num((!num_players.match(regex) || Number(num_players) < 2 || Number(num_players) > 8));
             set_warn_num((!num_players.match(regex) || Number(num_players) < 2 || Number(num_players) > 8))
+
             setTimeout(() => {
                 set_input_error_num(false);
                 set_input_error_size(false)                
@@ -53,18 +56,40 @@ export default function NewGame()
     }
     
 
-    const handleNumInput = (e) => {
+    const handleNumInput = (e) => 
+    {
         const regex=/^[0-9]+$/;
-        
-        if (e.target.value.match(regex)|| e.target.value === ''){ set_num_players(e.target.value); }
+        const input = e.target.value;
 
+        if (input.match(regex)|| input === '') 
+        {
+            set_num_players(input)
+            if (Number(input) >= 2 && Number(input) <= 8) set_temp_names( Array(Number(input)).fill('') )
+            else set_game_params((prev) => ({ ...prev, names: []}))
+        }; 
     };
 
-    const handleSizeInput = (e) => {
+    const handleSizeInput = (e) => 
+    {
         const regex=/^[0-9]+$/;
-        if (e.target.value.match(regex) || e.target.value === ''){ set_size(e.target.value); }
-
+        if (e.target.value.match(regex) || e.target.value === '') set_size(e.target.value); 
     };
+
+    const handleName = (e) => 
+    {
+        const ind = Number(e.target.id);
+        const regex = /^^[A-Z]$/;
+        const input = e.target.value;
+        console.log('name', input, input.match(regex));
+
+        if ((input.match(regex) || input === '') && !temp_names.includes(input)) 
+        {   
+            let temp = temp_names.slice(0);
+            temp[ind] = input;
+            set_temp_names( temp )
+        }
+
+    }
 
     return (
         <div className="flex_col_center" style={{minHeight: "100%"}}>
@@ -78,17 +103,39 @@ export default function NewGame()
                     <input 
                         title="Number of players should be between 2 and 8"
                         placeholder="Number of Players"
-                        value = {String(num_players)}
+                        value = { num_players }
                         onChange = { handleNumInput }
                         className= {`text-center ${input_error_num ? 'shake': ''}`}
                         style={{minWidth : '70%',width: 'fit-content', maxWidth: '50%', height: '50px'}}
                         
                         />
                     
+                    {
+                        temp_names.length > 0
+                        ? 
+                            <div className="flex_row_center gap_10">
+                                {
+                                    temp_names.map((name, ind ) => (
+                                        <input 
+                                            title= {`Letter to represent a player ${ind + 1}`}
+                                            placeholder= { ind + 1 }
+                                            value= { name }
+                                            id= { ind }
+                                            key= { ind }
+                                            onChange={ handleName }
+                                            className="text-center"
+                                            style={{ height: '45px', width: '45px' }}
+                                        />
+                                    ))
+                                }
+                            </div>
+                        :   
+                            <></>
+                    }
                     <input 
                         title="Size should be between 5 and 30"
                         placeholder="Size"
-                        value = {String(size)}
+                        value = {size}
                         onChange = { handleSizeInput }
                         className= {`text-center ${input_error_size ? 'shake': ''}`}
                         style={{minWidth: '70%',width: 'fit-content', maxWidth: '50%', height: '50px'}}
