@@ -92,13 +92,13 @@ export default function NewGame()
     }
 
     return (
-        <div className="flex_col_center" style={{minHeight: "100%"}}>
+        <div className="flex_col_center bg-off-white" style={{minHeight: "100%"}}>
             <Nav  page={"Play"} />
             
             <div className="flex_col_center" style={{width: "100%"}}>       
-                <div className="shadow-lg flex_col_center gap_20 px-2 py-5 m-4 rounded" style={{minHeight : '150px', width : '30%', minWidth: 'fit-content'}}>            
+                <div className="flex_col_center bg-white shadow-lg gap_20 px-2 py-5 m-4 rounded border border-1 border-black" style={{minHeight : '150px', width : '400px'}}>            
                     
-                    <h3>Game Setup</h3>
+                    <h3 className="text-center">Game Setup</h3>
 
                     <input 
                         title="Number of players should be between 2 and 8"
@@ -113,7 +113,7 @@ export default function NewGame()
                     {
                         temp_names.length > 0
                         ? 
-                            <div className="flex_row_center gap_10">
+                            <div className="flex_row_center gap_10 px-5 mb-3" style={{flexWrap: "wrap"}}>
                                 {
                                     temp_names.map((name, ind ) => (
                                         <input 

@@ -3,7 +3,7 @@
 export default function Footer(){
 
     return (
-        <footer className='flex_col_center bg-white shadow-lg p-3 fs-6 w-100 footer'>
+        <footer className='flex_col_center bg-white shadow-lg p-3 fs-6 w-100 footer border-top border-2 border-black'>
                 
             <div> 
                 Nathnael Bekele 

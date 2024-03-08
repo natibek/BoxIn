@@ -31,6 +31,7 @@ body
 #root
 {
   min-height: 100vh;
+  background-color: rgb(240,240,240);
 }
 
 code 
@@ -48,6 +49,11 @@ code
 .footer 
 {
   margin-top: auto;
+}
+
+.bg-white
+{
+  background-color: white;
 }
 
 .bg-off-white 
@@ -157,6 +163,7 @@ animation: shaking 0.5s ease-in-out;
   display: grid;
   grid-template-columns: repeat(var(--num-cols), 55px);
   row-gap: 14px;
+  background-color: white;
 }
 
 .box
@@ -215,6 +222,7 @@ animation: shaking 0.5s ease-in-out;
 {
   border: none;
   background-color: var(--hover-color);
+  cursor: pointer;
 }
 
 .top-left,
@@ -253,4 +261,8 @@ animation: shaking 0.5s ease-in-out;
 
 }
 
-
+#turn
+{
+  /* color: var(--hover-color); */
+  font-weight: 550;
+}

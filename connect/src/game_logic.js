@@ -31,21 +31,7 @@ export default class Board{
         }
         if (old_board_1d) this.box_1d = old_board_1d;
         else this.box_1d = new Array((size-1) * (size - 1)).fill(null);
-        // this.box = []
-        // for (let i = 0; i < size - 1; i++){
-        //     let row = [];
-        //     for (let j = 0; j < size -1; j++){
-        //         row.push(null);
-        //     }                  
-        //     this.box.push(row);
-        // }
         this.turn = turn;
-        
-        // console.log("Board", this.board)
-        // console.log("Box", this.box)
-        // console.log("Num Players", this.num_players)
-        // console.log("Turn", this.turn)
-
     }
 
     update_turn()
@@ -63,12 +49,10 @@ export default class Board{
         if(this.is_hori(pos1_mat, pos2_mat)) return !this.board[row1][col1].right && !this.board[row2][col2].left;
 
         return false;
- 
     }
 
     location(pos)
     {
-        // console.log([Math.floor(pos/this.size) , pos % this.size], "pos")
         return [Math.floor(pos/this.size) , pos % this.size]
     }
 
@@ -103,11 +87,9 @@ export default class Board{
             {
                 // check left
                 left_boxed = this.board[row1][col1].left && this.board[row2][col2].left && this.board[row1][col1-1].down;
-                // console.log(left_boxed, "left")
                 if (left_boxed) {
                     let ind = row1 * (this.size - 1) + (col1 - 1);
                     this.box_1d[ind] = this.names[this.turn - 1];
-                    // this.box[row1][col1-1] = this.turn;
                     state.push(ind)
                     console.log('box left');
                 }
@@ -117,17 +99,12 @@ export default class Board{
             {
                 // check right
                 right_boxed = this.board[row1][col1].right && this.board[row2][col2].right && this.board[row1][col1+1].down;
-                // console.log(right_boxed, "right")
                 if (right_boxed) {
                     let ind = row1 * (this.size - 1) + col1;
                     this.box_1d[ind] = this.names[this.turn - 1];
-
-                    // this.box[row1][col1] = this.turn;
                     state.push(ind)
                     console.log('box right');
-                
                 }
-
             }
             if (left_boxed || right_boxed) return state;
             return false;
@@ -144,10 +121,8 @@ export default class Board{
                 if (up_boxed) {
                     let ind = (row1-1) * (this.size - 1) + col1
                     this.box_1d[ind] = this.names[this.turn - 1];
-                    // this.box[row1-1][col1] = this.turn;
                     state.push(ind);
                     console.log('box up')
-                    
                 }
 
             }
@@ -158,11 +133,9 @@ export default class Board{
                 if (down_boxed) {
                     let ind = row1 * (this.size - 1) + col1
                     this.box_1d[ind] = this.names[this.turn - 1];
-                    // this.box[row1][col1] = this.turn;
                     state.push(ind);
                     console.log('box down')
                 }
-
             }
 
             if (up_boxed || down_boxed) return state;
@@ -196,6 +169,11 @@ export default class Board{
         const state = this.is_box([row1, col1], [row2, col2]);
         if (!state) this.update_turn();
         return state;
+    }
+    
+    static available_moves(board)
+    {
+        const move_dirs = []
     }
 
 }

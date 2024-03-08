@@ -43,7 +43,7 @@ export default function Game()
         else if (game_params.size && game_params.num_players){
             let new_board = new Board( game_params.num_players, game_params.size, game_params.names );
             set_game( new_board );
-            r.style.setProperty('--hover-color', colorScheme[0])
+            r.style.setProperty('--hover-color', colorScheme[0]);
 
             // set_turn( {now: new_board.names[new_board.turn - 1]});
             localStorage.setItem('board', JSON.stringify(new_board));
@@ -138,14 +138,14 @@ export default function Game()
 
     return (
         <>
-        <div className="flex_col_center p-5" style={{width: 'fit-content', height: 'fit-content'}}>
+        <div className="flex_col_center p-5 bg-off-white" style={{width: 'fit-content', height: 'fit-content'}}>
             {
                 game ? 
                     <>
-                    <div className="p-3 fs-3" id="turn">                        
+                    <div className="p-3 fs-2" id="turn">                        
                     </div>
 
-                    <div className="grid_display" style={{'--num-cols': game_params.size - 1}}>
+                    <div className="grid_display p-5 rounded shadow-lg border border-1 border-black" style={{'--num-cols': game_params.size - 1}}>
                         { 
                             game.box_1d.map((name,ind) => (
                                 <div key = {ind} id={ind} className="box flex_col_center">
