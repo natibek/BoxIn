@@ -35,7 +35,8 @@ export default function NewGame()
             
             localStorage.setItem('board', JSON.stringify(null));
             setTimeout(() => {
-                navigate('/play');                
+                // navigate('/play');                
+                // window.location.reload()
             }, 100);
         }
         else 

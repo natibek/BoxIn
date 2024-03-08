@@ -6,7 +6,7 @@ import Game from "./Game";
 export default function Play()
 {
     return (
-        <div className="flex_col_center" style={{minHeight: "100%"}}>
+        <div className="flex_col_center" style={{minHeight: "100vh"}}>
             <Nav  page={"Play"} />
 
             <div className="flex_col_center" style={{width: "100%"}}>    

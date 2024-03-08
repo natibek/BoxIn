@@ -56,6 +56,22 @@ export default function Game()
         }
     }, [])
 
+    useEffect(() => {
+        if (game_params.size && game_params.num_players){
+            let new_board = new Board( game_params.num_players, game_params.size, game_params.names );
+            set_game( new_board );
+            r.style.setProperty('--hover-color', colorScheme[0]);
+
+            // set_turn( {now: new_board.names[new_board.turn - 1]});
+            localStorage.setItem('board', JSON.stringify(new_board));
+
+            setTimeout(() => {
+                document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];            
+            }, 100);
+            console.log('NEW GAME')            
+        }
+    }, [game_params])
+
     const is_first_col = (ind) =>  ind % (game_params.size - 1) === 0;
     const is_last_row = (ind) => Math.floor(ind / (game_params.size - 1)) === (game_params.size - 2);
     
