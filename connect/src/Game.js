@@ -21,8 +21,6 @@ export default function Game()
 {
     const [ game, set_game ] = useState();
     const { game_params, set_game_params } = useContext(GameParamsCxt);
-    const navigate = useNavigate();
-    
     
     useEffect(() => {
         const cached = JSON.parse(localStorage.getItem('board'));

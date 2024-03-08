@@ -1,17 +1,32 @@
 import { Dropdown } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Vs} from './assets/against.svg';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import { GameParamsCxt } from './App';
+import { useContext } from 'react';
 
 export default function Nav({ page }){
     const navigate = useNavigate();
+    const { game_params, set_game_params } = useContext(GameParamsCxt);
 
-    const handleNewGame = () => {           
-        navigate("/new");
-    };
 
-    const handleContinue = () => {  
+    const handleNewGame = () => {        
+        // set_game_params(
+        //     (prev) => ({
+        //         ...prev,
+        //         size: null,
+        //         num_players: null,
+        //         names: []
+        //     })
+        // )   
+        localStorage.setItem('board', JSON.stringify(null));
         navigate("/play");
+        window.location.reload();
+    };
+    
+    const handleNewGameBot = () => {           
+        localStorage.setItem('bot_board', JSON.stringify(null));
+        navigate("/bot");
+        window.location.reload();
     };
     
     const handleOnline = () => {
@@ -42,7 +57,7 @@ export default function Nav({ page }){
 
                             <Dropdown.Menu className='dropdown-submenu'>                
                                 <Dropdown.Item onClick={ handleNewGame }  className='flex_row_start dropdown-items'> <i className="bi bi-plus-square"></i> <> &nbsp; New </> </Dropdown.Item>   
-                                <Dropdown.Item onClick={ handleNewGame }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
+                                <Dropdown.Item onClick={ () => { navigate("/play") }  }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
                             </Dropdown.Menu>
                         </Dropdown>
 
@@ -54,8 +69,8 @@ export default function Nav({ page }){
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>                
-                                <Dropdown.Item onClick={ handleNewGame }  className='flex_row_start dropdown-items'> <i className="bi bi-plus-square"></i> <> &nbsp; New </> </Dropdown.Item>   
-                                <Dropdown.Item onClick={ handleNewGame }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
+                                <Dropdown.Item onClick={ handleNewGameBot }  className='flex_row_start dropdown-items'> <i className="bi bi-plus-square"></i> <> &nbsp; New </> </Dropdown.Item>   
+                                <Dropdown.Item onClick={ () => { navigate("/bot") } }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
                             </Dropdown.Menu>
                         </Dropdown>
                     

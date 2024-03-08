@@ -62,7 +62,7 @@ export default function NewGame()
         const regex=/^[0-9]+$/;
         const input = e.target.value;
 
-        if (input.match(regex)|| input === '') 
+        if ((input.match(regex) && (Number(input) >= 2 && Number(input) <= 8)) ||input === '') 
         {
             set_num_players(input)
             if (Number(input) >= 2 && Number(input) <= 8) set_temp_names( Array(Number(input)).fill('') )
@@ -73,7 +73,9 @@ export default function NewGame()
     const handleSizeInput = (e) => 
     {
         const regex=/^[0-9]+$/;
-        if (e.target.value.match(regex) || e.target.value === '') set_size(e.target.value); 
+        const input = e.target.value;
+
+        if (input.match(regex) || input === '') set_size(input); 
     };
 
     const handleName = (e) => 
