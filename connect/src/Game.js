@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { GameParamsCxt } from "./App";
 import Board from "./game_logic";
+import NewGame from "./NewGame";
 import { useNavigate } from "react-router-dom";
 
 const colorScheme = [
@@ -183,8 +184,8 @@ export default function Game()
                     </div>
                     </>
                 :
-                    
-                    <button onClick={() => { navigate('/new') }} className="button bg-off-white p-4 rounded shadow-lg">Create New Game</button>
+                    <NewGame />
+                    // <button onClick={() => { navigate('/new') }} className="button bg-white border border-1 border-black p-4 rounded shadow-lg">Create New Game</button>
             }
         </div>
         </>

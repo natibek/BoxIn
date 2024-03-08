@@ -1,5 +1,6 @@
 import { Dropdown } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
+import { ReactComponent as Vs} from './assets/against.svg';
 
 export default function Nav({ page }){
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function Nav({ page }){
     return (
         <div className='flex_row_center p-4 bg-white border-bottom w-100 nav shadow-lg border-bottom border-2 border-black' style={{height: 'fit-content'}}>
             
-            <div className='position-absolute' style={{left: "50px"}}>
+            <div className='position-absolute border border-1 border-black rounded' style={{left: "50px"}}>
                 <Dropdown>
                     <Dropdown.Toggle className="dropdown-style btn bg-off-white">
                         &#9776;
@@ -31,8 +32,15 @@ export default function Nav({ page }){
 
                     <Dropdown.Menu>                
                         <Dropdown.Item onClick={ () => { navigate("/") } }> <i className="bi bi-house"></i> <> &nbsp; Home</> </Dropdown.Item>   
-                        <Dropdown.Item onClick={ handleNewGame }> <i className="bi bi-plus-square"></i> <> &nbsp; New Game</> </Dropdown.Item>   
-                        <Dropdown.Item onClick={ handleContinue }> <i className="bi bi-bounding-box-circles"></i> <> &nbsp; Continue Game</> </Dropdown.Item>
+                        {/* <Dropdown.Item onClick={ handleNewGame }> <i className="bi bi-plus-square"></i> <> &nbsp; New Game</> </Dropdown.Item>    */}
+                        <Dropdown.Item onClick={ handleContinue }> 
+                            <div className = "position-relative" style = {{left: '-6px'}}>
+                                <Vs width = "22px" height = "22px" className = "position-relative" style = {{left: '3px', top: '-2px'}}/><> &nbsp; Against Friends </> 
+                            </div>                            
+                        </Dropdown.Item>
+
+                        <Dropdown.Item onClick={ handleContinue }> <i className="bi bi-robot"></i> <> &nbsp; Against Bot </> </Dropdown.Item>
+
                         <Dropdown.Item onClick={ handleOnline }> <i className="bi bi-router"></i> <> &nbsp; Multiplayer</> </Dropdown.Item>   
                         <Dropdown.Item onClick={ handleInstructions }> <i className="bi bi-question"> </i> <>&nbsp; Instructions</></Dropdown.Item>                     
                     </Dropdown.Menu>

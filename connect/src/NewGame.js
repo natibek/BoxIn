@@ -21,7 +21,7 @@ export default function NewGame()
     
     const handleGameSetting = () => 
     {    
-        if (Number(size) >= 5 && Number(size) <= 30 && Number(num_players) >= 2 && Number(num_players) <= 8)
+        if (Number(size) >= 5 && Number(size) <= 20 && Number(num_players) >= 2 && Number(num_players) <= 8)
         {   
             set_game_params(
                 (prev) => 
@@ -42,8 +42,8 @@ export default function NewGame()
         {
             const regex=/^[0-9]+$/;
 
-            set_input_error_size((!size.match(regex) || Number(size) < 5 || Number(size) > 30));
-            set_warn_size((!size.match(regex) || Number(size) < 5 || Number(size) > 30))
+            set_input_error_size((!size.match(regex) || Number(size) < 5 || Number(size) > 20));
+            set_warn_size((!size.match(regex) || Number(size) < 5 || Number(size) > 20))
             set_input_error_num((!num_players.match(regex) || Number(num_players) < 2 || Number(num_players) > 8));
             set_warn_num((!num_players.match(regex) || Number(num_players) < 2 || Number(num_players) > 8))
 
@@ -92,10 +92,10 @@ export default function NewGame()
     }
 
     return (
-        <div className="flex_col_center bg-off-white" style={{minHeight: "100%"}}>
-            <Nav  page={"Play"} />
+        // <div className="flex_col_center bg-off-white" style={{minHeight: "100%"}}>
+        //     <Nav  page={"Play"} />
             
-            <div className="flex_col_center" style={{width: "100%"}}>       
+        //     <div className="flex_col_center" style={{width: "100%", flexGrow: 1}}>       
                 <div className="flex_col_center bg-white shadow-lg gap_20 px-2 py-5 m-4 rounded border border-1 border-black" style={{minHeight : '150px', width : '400px'}}>            
                     
                     <h3 className="text-center">Game Setup</h3>
@@ -133,7 +133,7 @@ export default function NewGame()
                             <></>
                     }
                     <input 
-                        title="Size should be between 5 and 30"
+                        title="Size should be between 5 and 20"
                         placeholder="Size"
                         value = {size}
                         onChange = { handleSizeInput }
@@ -144,17 +144,17 @@ export default function NewGame()
                     
                     <ul hidden = { !warn_num && !warn_size } className="flex_col_start gap_20" style={{color: 'red'}}>
                         <li hidden={!warn_num}>Number of players should be between 2 and 8.</li>
-                        <li hidden={!warn_size}>Size should be between 5 and 30.</li>
+                        <li hidden={!warn_size}>Size should be between 5 and 20.</li>
                     </ul>
             
                     <button className="button bg-light-grey rounded px-5 py-2 mt-3" onClick={handleGameSetting}>Play</button>
                 
                 </div>                
                 
-            </div>
+        //     </div>
 
-            <Footer />
+        //     <Footer />
 
-        </div>
+        // </div>
     );
 }

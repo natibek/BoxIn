@@ -32,6 +32,7 @@ export default class Board{
         if (old_board_1d) this.box_1d = old_board_1d;
         else this.box_1d = new Array((size-1) * (size - 1)).fill(null);
         this.turn = turn;
+        this.score = Object.fromEntries(this.names.map(name => [name, 0]));
     }
 
     update_turn()
@@ -92,6 +93,7 @@ export default class Board{
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind)
                     console.log('box left');
+                    this.score[ this.names[this.turn - 1] ] += 1
                 }
             }
             
@@ -104,6 +106,8 @@ export default class Board{
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind)
                     console.log('box right');
+                    this.score[ this.names[this.turn - 1] ] += 1
+
                 }
             }
             if (left_boxed || right_boxed) return state;
@@ -123,6 +127,8 @@ export default class Board{
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind);
                     console.log('box up')
+                    this.score[ this.names[this.turn - 1] ] += 1
+
                 }
 
             }
@@ -135,12 +141,24 @@ export default class Board{
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind);
                     console.log('box down')
+                    this.score[ this.names[this.turn - 1] ] += 1
                 }
             }
 
             if (up_boxed || down_boxed) return state;
             return false;
         }
+    }
+
+    is_completed()
+    {
+        let total = 0;
+
+        Object.entries(this.score).forEach(([key, value])=> {
+            total += value
+        });
+
+        return total === (this.size - 1) ** 2;
     }
 
     apply_move(pos1, pos2)
