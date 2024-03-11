@@ -33,6 +33,7 @@ export default class Board{
         else this.box_1d = new Array((size-1) * (size - 1)).fill(null);
         this.turn = turn;
         this.score = Object.fromEntries(this.names.map(name => [name, 0]));
+        this.solved = false;
     }
 
     update_turn()
@@ -186,6 +187,15 @@ export default class Board{
         
         const state = this.is_box([row1, col1], [row2, col2]);
         if (!state) this.update_turn();
+        
+        if (this.is_completed())
+        {
+            Object.entries(this.score).forEach(([key, value]) => {
+                if (value > this.solved) this.score = key;
+            })
+        }
+        
+        this.solved = this.is_completed();
         return state;
     }
     

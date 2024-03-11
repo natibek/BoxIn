@@ -3,11 +3,16 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import './index.css';
 import Home from './Home';
 import Play from './Play';
-import NewGame from "./NewGame";
 import Multiplayer from './Multiplayer';
 import Bot from './Bot';
 
 export const GameParamsCxt = createContext();
+export const BotParamsCxt = createContext();
+
+export const NewGameCxt = createContext();
+export const NewBotCxt = createContext();
+
+
 
 const GameParamsProvider = ({ children }) => {
   const [ game_params, set_game_params ] = useState( {size: null, num_players: null, names: []} );
@@ -17,6 +22,39 @@ const GameParamsProvider = ({ children }) => {
     <GameParamsCxt.Provider value = {value}>
       { children }
     </GameParamsCxt.Provider>
+  );
+};
+
+const BotParamsProvider = ({ children }) => {
+  const [ bot_params, set_bot_params ] = useState( {size: null, bot_strength: null} );
+  const value = { bot_params, set_bot_params };
+
+  return (
+    <BotParamsCxt.Provider value = {value}>
+      { children }
+    </BotParamsCxt.Provider>
+  );
+};
+
+const NewGameProvider = ({ children }) => {
+  const [ new_game, set_new_game ] = useState( false );
+  const value = { new_game, set_new_game };
+
+  return (
+    <NewGameCxt.Provider value = {value}>
+      { children }
+    </NewGameCxt.Provider>
+  );
+};
+
+const BotNewProvider = ({ children }) => {
+  const [ new_bot, set_new_bot ] = useState( false );
+  const value = { new_bot, set_new_bot };
+
+  return (
+    <NewBotCxt.Provider value = {value}>
+      { children }
+    </NewBotCxt.Provider>
   );
 };
 
@@ -43,7 +81,15 @@ export default function App()
 {
     return (
         <GameParamsProvider>
-            <RouterProvider router={router} />
+        <BotParamsProvider>
+        <NewGameProvider>
+        <BotNewProvider>
+
+          <RouterProvider router={router} />
+
+        </BotNewProvider>
+        </NewGameProvider>
+        </BotParamsProvider>
         </GameParamsProvider>
     );
 }

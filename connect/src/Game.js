@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { GameParamsCxt } from "./App";
+import { GameParamsCxt, NewGameCxt } from "./App";
 import Board from "./game_logic";
 import NewGame from "./NewGame";
 import { useNavigate } from "react-router-dom";
@@ -21,10 +21,13 @@ export default function Game()
 {
     const [ game, set_game ] = useState();
     const { game_params, set_game_params } = useContext(GameParamsCxt);
+    const { new_game, set_new_game } = useContext(NewGameCxt);
+
     
     useEffect(() => {
         const cached = JSON.parse(localStorage.getItem('board'));
         console.log(game_params, cached)
+
         if ( cached )
         {
             console.log("CACHED")
@@ -32,42 +35,43 @@ export default function Game()
 
             const new_board = new Board(cached.num_players, cached.size, cached.names, cached.board, cached.box_1d, cached.turn)
             set_game( new_board );
-            // set_turn( {now: cached.names[cached.turn - 1]});
             r.style.setProperty('--hover-color', colorScheme[cached.turn - 1])
             setTimeout(() => {
                 document.getElementById("turn").textContent = cached.names[cached.turn - 1];
             }, 100);
-            console.log('CACHED GAME')
+            console.log('CACHED GAME');
         }
         else if (game_params.size && game_params.num_players){
             let new_board = new Board( game_params.num_players, game_params.size, game_params.names );
             set_game( new_board );
             r.style.setProperty('--hover-color', colorScheme[0]);
-
-            // set_turn( {now: new_board.names[new_board.turn - 1]});
             localStorage.setItem('board', JSON.stringify(new_board));
 
             setTimeout(() => {
                 document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];            
             }, 100);
-            console.log('NEW GAME')            
+            console.log('NEW GAME');            
         }
+        else set_new_game( true );
     }, [])
 
     useEffect(() => {
+        const cached = JSON.parse(localStorage.getItem('board'));
+        console.log("HERE");
+        set_game(null);
         if (game_params.size && game_params.num_players){
             let new_board = new Board( game_params.num_players, game_params.size, game_params.names );
             set_game( new_board );
             r.style.setProperty('--hover-color', colorScheme[0]);
 
-            // set_turn( {now: new_board.names[new_board.turn - 1]});
             localStorage.setItem('board', JSON.stringify(new_board));
 
             setTimeout(() => {
                 document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];            
             }, 100);
-            console.log('NEW GAME')            
+            console.log('NEW GAME');            
         }
+        else set_new_game( true );
     }, [game_params])
 
     const is_first_col = (ind) =>  ind % (game_params.size - 1) === 0;
@@ -121,19 +125,23 @@ export default function Game()
             localStorage.setItem('board', JSON.stringify(game));
             r.style.setProperty('--hover-color', colorScheme[game.turn - 1])
 
-            if (typeof state === 'object')  
+            if (typeof state === 'object' && state.length > 0)  
             {   
-                if (state.length > 0)
+                for (let close_dir of state)
                 {
-                    for (let close_dir of state)
-                    {
-                        console.log(game_params.names[game.turn - 1], "BOX")
-                        const text = document.createTextNode(game.names[game.turn - 1]);
-                        document.getElementById(String(close_dir)).appendChild(text);      
-                    }
+                    console.log(game_params.names[game.turn - 1], "BOX")
+                    const text = document.createTextNode(game.names[game.turn - 1]);
+                    document.getElementById(String(close_dir)).appendChild(text);      
                 }
+                
             }
-            document.getElementById("turn").textContent = game.names[game.turn - 1];
+
+            console.log("scores", game.solved, game.score)
+            if (game.solved){
+                document.getElementById("turn").textContent = "Winner: " + game.solved;
+                console.log('here')
+            } 
+            else document.getElementById("turn").textContent = game.names[game.turn - 1];
         }
     };
 
@@ -143,65 +151,59 @@ export default function Game()
         {
             case "up":
             case "down":
-                return game.board[get_row_col(ind, dir)[2]][get_row_col(ind, dir)[3]].right
+                return game.board[get_row_col(ind, dir)[2]][get_row_col(ind, dir)[3]].right;
 
             case "left":
             case "right":
-                return game.board[get_row_col(ind, dir)[2]][get_row_col(ind, dir)[3]].down
+                return game.board[get_row_col(ind, dir)[2]][get_row_col(ind, dir)[3]].down;
         }
     }
 
     return (
-        <>
+        
         <div className="flex_col_center p-5 bg-off-white" style={{width: 'fit-content', height: 'fit-content'}}>
-            {
-                game ? 
-                    <>
-                    <div className="p-3 fs-2" id="turn">                        
-                    </div>
+            
+            <div className="p-3 fs-2" id="turn"> </div>
 
-                    <div className="grid_display p-5 rounded shadow-lg border border-1 border-black" style={{'--num-cols': game_params.size - 1}}>
-                        { 
-                            game.box_1d.map((name,ind) => (
-                                <div key = {ind} id={ind} className="box flex_col_center">
-                                    { name ? name : '' }
-                                    <div onClick={handleClick} className="up" 
-                                        style={{
-                                            backgroundColor: `${ is_connected(ind, "up") ? colorScheme[is_connected(ind, "up") - 1] : ''}`, 
-                                            borderStyle: `${is_connected(ind, "up") ? 'none': 'dashed'}`}}></div>
+            <div className="grid_display p-5 rounded shadow-lg border border-1 border-black" style={{'--num-cols': game_params.size - 1}}>
+                
+                {   game ?
+                    game.box_1d.map((name,ind) => (
+                        <div key = {ind} id={ind} className="box flex_col_center">
+                            { name ? name : '' }
+                            <div onClick={handleClick} className="up" 
+                                style={{
+                                    backgroundColor: `${ is_connected(ind, "up") ? colorScheme[is_connected(ind, "up") - 1] : ''}`, 
+                                    borderStyle: `${is_connected(ind, "up") ? 'none': 'dashed'}`}}></div>
 
-                                    <div onClick={handleClick} className="right" 
-                                        style={{
-                                            backgroundColor: `${is_connected(ind, "right") ? colorScheme[is_connected(ind, "right") - 1]: ''}`,  
-                                            borderStyle: `${is_connected(ind, "right") ? 'none': 'dashed'}`}}></div>
-                                    
-                                    { is_first_col(ind) ? <div onClick={handleClick} className="left" 
-                                        style={{
-                                            backgroundColor: `${is_connected(ind, "left") ? colorScheme[is_connected(ind, "left") - 1]: ''}`, 
-                                            borderStyle: `${is_connected(ind, "left") ? 'none': 'dashed'}`}}></div> : <></> }
+                            <div onClick={handleClick} className="right" 
+                                style={{
+                                    backgroundColor: `${is_connected(ind, "right") ? colorScheme[is_connected(ind, "right") - 1]: ''}`,  
+                                    borderStyle: `${is_connected(ind, "right") ? 'none': 'dashed'}`}}></div>
+                            
+                            { is_first_col(ind) ? <div onClick={handleClick} className="left" 
+                                style={{
+                                    backgroundColor: `${is_connected(ind, "left") ? colorScheme[is_connected(ind, "left") - 1]: ''}`, 
+                                    borderStyle: `${is_connected(ind, "left") ? 'none': 'dashed'}`}}></div> : <></> }
 
-                                    { is_last_row(ind) ? <div  onClick={handleClick} className="down"  
-                                         style={{
-                                            backgroundColor: `${ is_connected(ind, "down") ? colorScheme[is_connected(ind, "down") - 1]: ''}`,  
-                                            borderStyle: `${ is_connected(ind, "down") ? 'none': 'dashed'}`}}></div> : <></> }
+                            { is_last_row(ind) ? <div  onClick={handleClick} className="down"  
+                                    style={{
+                                    backgroundColor: `${ is_connected(ind, "down") ? colorScheme[is_connected(ind, "down") - 1]: ''}`,  
+                                    borderStyle: `${ is_connected(ind, "down") ? 'none': 'dashed'}`}}></div> : <></> }
 
-                                    <div className="top-right"></div>
+                            <div className="top-right"></div>
 
-                                    { is_first_col(ind) ? <div className="top-left"></div> : <></> }
-                                    { is_last_row(ind) ?  <div className="bottom-right"></div>: <></>}
-                                    { is_last_row(ind) && is_first_col(ind) ? <div className="bottom-left"></div>: <></>}
+                            { is_first_col(ind) ? <div className="top-left"></div> : <></> }
+                            { is_last_row(ind) ?  <div className="bottom-right"></div>: <></>}
+                            { is_last_row(ind) && is_first_col(ind) ? <div className="bottom-left"></div>: <></>}
 
-                                    
-                                </div>
-                            ))
-                        }
-                    </div>
-                    </>
-                :
-                    <NewGame />
-                    // <button onClick={() => { navigate('/new') }} className="button bg-white border border-1 border-black p-4 rounded shadow-lg">Create New Game</button>
-            }
+                            
+                        </div>
+                    ))
+                    : <></>
+                }
+            </div>
+        
         </div>
-        </>
     );
 }

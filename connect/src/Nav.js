@@ -1,34 +1,38 @@
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, Modal } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Vs} from './assets/against.svg';
-import { GameParamsCxt } from './App';
-import { useContext } from 'react';
+import { GameParamsCxt, NewBotCxt, NewGameCxt } from './App';
+import { useContext, useState } from 'react';
+import NewGame from './NewGame';
 
 export default function Nav({ page }){
     const navigate = useNavigate();
     const { game_params, set_game_params } = useContext(GameParamsCxt);
+    const { new_game, set_new_game } = useContext(NewGameCxt);
+    const { new_bot, set_new_bot } = useContext(NewBotCxt);
 
 
     const handleNewGame = () => {        
-        // set_game_params(
-        //     (prev) => ({
-        //         ...prev,
-        //         size: null,
-        //         num_players: null,
-        //         names: []
-        //     })
-        // )   
-        localStorage.setItem('board', JSON.stringify(null));
+
         navigate("/play");
-        window.location.reload();
+        set_new_game( true );
     };
     
-    const handleNewGameBot = () => {           
-        localStorage.setItem('bot_board', JSON.stringify(null));
+    const handleContinue = () => {
+        navigate("/play");
+        set_new_game( false );
+    };
+
+    const handleNewBot = () => {           
         navigate("/bot");
-        window.location.reload();
+        set_new_bot( true );
     };
     
+    const handleBotContinue = () => {
+        navigate("/bot");
+        set_new_bot( false );
+    };
+
     const handleOnline = () => {
         navigate("/multiplayer")
     };
@@ -38,6 +42,7 @@ export default function Nav({ page }){
     };
 
     return (
+        
         <div className='flex_row_center p-4 bg-white border-bottom w-100 nav shadow-lg border-bottom border-2 border-black' style={{height: 'fit-content'}}>
             
             <div className='position-absolute border border-1 border-black rounded' style={{left: "50px"}}>
@@ -57,7 +62,7 @@ export default function Nav({ page }){
 
                             <Dropdown.Menu className='dropdown-submenu'>                
                                 <Dropdown.Item onClick={ handleNewGame }  className='flex_row_start dropdown-items'> <i className="bi bi-plus-square"></i> <> &nbsp; New </> </Dropdown.Item>   
-                                <Dropdown.Item onClick={ () => { navigate("/play") }  }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
+                                <Dropdown.Item onClick={ handleContinue }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
                             </Dropdown.Menu>
                         </Dropdown>
 
@@ -69,8 +74,8 @@ export default function Nav({ page }){
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>                
-                                <Dropdown.Item onClick={ handleNewGameBot }  className='flex_row_start dropdown-items'> <i className="bi bi-plus-square"></i> <> &nbsp; New </> </Dropdown.Item>   
-                                <Dropdown.Item onClick={ () => { navigate("/bot") } }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
+                                <Dropdown.Item onClick={ handleNewBot }  className='flex_row_start dropdown-items'> <i className="bi bi-plus-square"></i> <> &nbsp; New </> </Dropdown.Item>   
+                                <Dropdown.Item onClick={ handleBotContinue }  className='flex_row_start dropdown-items'> <i className="bi bi-repeat"></i> <> &nbsp; Conitnue </> </Dropdown.Item>   
                             </Dropdown.Menu>
                         </Dropdown>
                     
