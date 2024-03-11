@@ -5,6 +5,8 @@ import Home from './Home';
 import Play from './Play';
 import Multiplayer from './Multiplayer';
 import Bot from './Bot';
+import Rooms from './Rooms';
+import Lobby from './Lobby';
 
 export const GameParamsCxt = createContext();
 export const BotParamsCxt = createContext();
@@ -72,9 +74,19 @@ const router = createBrowserRouter([
     element: <Play />,
   },
   {
-    path: "multiplayer",
+    path: "/multiplayer",
     element: <Multiplayer />
+  },
+  {
+    path: "/multiplayer/lobby",
+    element: <Lobby />
+  },
+  {
+    path: "/multiplayer/rooms",
+    element: <Rooms />
   }
+
+
 ]);
 
 export default function App()

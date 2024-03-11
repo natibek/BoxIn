@@ -15,6 +15,7 @@
 html
 {
   min-height: 100vh;
+  overflow: auto;
 }
 
 body 
@@ -26,12 +27,14 @@ body
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100%;
+  overflow: auto;
 }
 
 #root
 {
   min-height: 100vh;
   background-color: rgb(240,240,240);
+  
 }
 
 code 
@@ -222,6 +225,17 @@ input[type="range"]::-webkit-slider-thumb:active {
 
 }
 
+.multi_button
+{
+  background-color: white;
+}
+
+.multi_button:hover
+{
+  cursor: pointer;
+  user-select: none;
+  transform: scale(1.1);
+}
 
 @keyframes shaking 
 {
@@ -252,7 +266,10 @@ animation: shaking 0.5s ease-in-out;
   background-color: white;
   border: 1px solid black;
   border-radius: 5%;
+  cursor: pointer;
+  user-select: none;
 }
+
 .grid_display 
 {
   padding: 20px;
