@@ -1,78 +1,107 @@
-import { useEffect, useState, useContext } from "react";
-import { GameParamsCxt, NewGameCxt } from "./App";
-import Board from "./game_logic";
+import { useContext, useState } from "react";
+import { BotParamsCxt, NewBotCxt } from "./App";
+import Bot from "./Bot";
 
-const colorScheme = [
-    "rgb(107, 170, 255)",
-    "#EEE8A9",
-    "#00c9b7",
-    "#D955DD",
-    "#FF8A72",
-    "#A3A5DB",
-    "#FF5774",
-    "#BFA5A5"
-];
+const colorScheme = [ "rgb(107, 170, 255)", "#EEE8A9" ];
 
 const r = document.querySelector(':root');
 
-export default function Game()
+export default function BotGame()
 {
+    const { bot_params, set_bot_params } = useContext(BotParamsCxt);
+    const { new_bot, set_new_bot } = useContext(NewBotCxt);
     const [ game, set_game ] = useState();
-    const { game_params, set_game_params } = useContext(GameParamsCxt);
-    const { new_game, set_new_game } = useContext(NewGameCxt);
+    const [ bot, set_bot ] = useState();
 
-    
     useEffect(() => {
-        const cached = JSON.parse(localStorage.getItem('board'));
+        const cached = JSON.parse(localStorage.getItem('bot'));
+        console.log(bot_params, cached)
 
         if ( cached )
         {
-            set_game_params( {size: cached.size, num_players: cached.num_players, names: cached.names} );
+            set_bot_params( {size: cached.size, bot_strength: cached.bot_strength} );
 
-            const new_board = new Board(cached.num_players, cached.size, cached.names, cached.board, cached.box_1d, cached.turn, cached.score, cached.done, cached.winner)
-
-
+            const new_board = new Board(2, cached.size, ["Player", "Bot"], cached.board, cached.box_1d, cached.turn);
             set_game( new_board );
-            r.style.setProperty('--hover-color', colorScheme[cached.turn - 1])
-            
-            setTimeout(() => {
-                
-                if (cached.done == true) 
-                {
-                    if ( cached.winner.length > 1 )
-                    { 
-                        const winners = cached.winner.join(', ')
-                        document.getElementById("turn").textContent = "Tie between: " +  cached.winner;
-                    }
-                    else if ( cached.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + cached.winner;
-                }             
-                else document.getElementById("turn").textContent = cached.names[cached.turn - 1];
-            }, 100);
 
+            set_bot( new Bot(cached.bot_strength) );
+
+            r.style.setProperty('--hover-color', colorScheme[cached.turn - 1]);
+
+            setTimeout(() => {
+                document.getElementById("turn").textContent = cached.names[cached.turn - 1];
+            }, 100);
             console.log('CACHED GAME');
         }
-        else if (game_params.size && game_params.num_players)
+        else if (bot_params.size && bot_params.bot_strength)
         {
-            let new_board = new Board( game_params.num_players, game_params.size, game_params.names );
+            let new_board = new Board( 2, bot_params.size, ["Player", "Bot"] );
             set_game( new_board );
+
+            set_bot( new Bot(bot_params.bot_strength) );
+
             r.style.setProperty('--hover-color', colorScheme[0]);
-            localStorage.setItem('board', JSON.stringify(new_board));
+            localStorage.setItem('bot', JSON.stringify(new_board));
 
             setTimeout(() => {
-                document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];            
+                if (game.solved){
+                    if ( game.winner.length > 1 )
+                    { 
+                        const winners = game.winner.join(', ')
+                        document.getElementById("turn").textContent = "Tie between: " + game.winner;
+                    }
+                    else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
+                    
+                } 
+                else document.getElementById("turn").textContent = game.names[game.turn - 1];
+
             }, 100);
             console.log('NEW GAME');            
         }
-        else set_new_game( true );
-    }, [])
+        else set_new_bot( true );
 
-    const is_first_col = (ind) =>  ind % (game_params.size - 1) === 0;
-    const is_last_row = (ind) => Math.floor(ind / (game_params.size - 1)) === (game_params.size - 2);
+    }, []);
+
+    // useEffect(() => {
+
+    //     set_game(null);
+    //     if (bot_params.size && bot_params.bot_strength)
+    //     {
+    //         let new_board = new Board( 2, bot_params.size, ["Player", "Bot"] );
+
+    //         set_game( new_board );
+    //         r.style.setProperty('--hover-color', colorScheme[0]);
+
+    //         localStorage.setItem('bot', JSON.stringify(new_board));
+    //         setTimeout(() => {
+    //             if (game.solved){
+    //                 if ( game.winner.length > 1 )
+    //                 { 
+    //                     const winners = game.winner.join(', ')
+    //                     document.getElementById("turn").textContent = "Tie between: " + game.winner;
+    //                 }
+    //                 else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
+                    
+    //             } 
+    //             else document.getElementById("turn").textContent = game.names[game.turn - 1];
+
+    //         }, 100);          
+    //     }
+    //     else set_new_bot( true );
+
+    // }, [bot_params]);
+
+    const is_first_col = (ind) =>  ind % (bot_params.size - 1) === 0;
+    const is_last_row = (ind) => Math.floor(ind / (bot_params.size - 1)) === (bot_params.size - 2);
     
+    const bot_move = () => {
+        const move = bot.bet_move();
+    }
+
     const get_row_col = (ind, side) => {
         let pos1, pos2;
-        const row_inner = Math.floor(ind / (game_params.size - 1));
-        const col_inner = ind % (game_params.size - 1);
+        const row_inner = Math.floor(ind / (bot_params.size - 1));
+        const col_inner = ind % (bot_params.size - 1);
 
         switch(side){
             case 'up':
@@ -80,21 +109,21 @@ export default function Game()
                 pos2 = pos1 + 1;
                 break;
             case "down":
-                pos1 = ind + row_inner + game_params.size;
+                pos1 = ind + row_inner + bot_params.size;
                 pos2 = pos1 + 1;    
                 break;
             case "right":
                 pos1 = ind + 1 + row_inner;
-                pos2 = pos1 + game_params.size;
+                pos2 = pos1 + bot_params.size;
                 break;
             case "left":
                 pos1 = ind + row_inner;
-                pos2 = pos1 + game_params.size;
+                pos2 = pos1 + bot_params.size;
                 break;
         }
 
-        const row1 = Math.floor(pos1 / (game_params.size))
-        const col1 = pos1 % (game_params.size)
+        const row1 = Math.floor(pos1 / (bot_params.size))
+        const col1 = pos1 % (bot_params.size)
         
         return [pos1, pos2, row1, col1]
     };
@@ -106,7 +135,9 @@ export default function Game()
         {
             const ind = Number(e.target.parentNode.id);
             
-            let [pos1, pos2, ..._] = get_row_col(ind, bar.className);
+            let [pos1, pos2, ..._] = get_row_col(ind, bar.className)
+
+            console.log(pos1, pos2, "pos");
 
             bar.style.backgroundColor = colorScheme[game.turn - 1];
             bar.style.borderStyle = 'none';
@@ -119,13 +150,15 @@ export default function Game()
             {   
                 for (let close_dir of state)
                 {
+                    console.log(bot_params.names[game.turn - 1], "BOX")
                     const text = document.createTextNode(game.names[game.turn - 1]);
                     document.getElementById(String(close_dir)).appendChild(text);      
                 }
                 
             }
 
-            if (game.done){
+            console.log("scores", game.solved, game.score);
+            if (game.solved){
                 if ( game.winner.length > 1 )
                 { 
                     const winners = game.winner.join(', ')
@@ -153,12 +186,11 @@ export default function Game()
     };
 
     return (
-        
         <div className="flex_col_center p-5 bg-off-white" style={{width: 'fit-content', height: 'fit-content'}}>
             
             <div className="p-3 fs-2" id="turn"> </div>
 
-            <div className="grid_display p-5 rounded shadow-lg border border-1 border-black" style={{'--num-cols': game_params.size - 1}}>
+            <div className="grid_display p-5 rounded shadow-lg border border-1 border-black" style={{'--num-cols': bot_params.size - 1}}>
                 
                 {   game ?
                     game.box_1d.map((name,ind) => (
@@ -196,7 +228,7 @@ export default function Game()
                     : <></>
                 }
             </div>
-        
+    
         </div>
     );
 }

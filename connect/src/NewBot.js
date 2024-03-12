@@ -1,6 +1,6 @@
 
-import { useState, useEffect, useContext } from "react";
-import { GameParamsCxt, NewBotCxt, NewGameCxt } from "./App";
+import { useState, useContext } from "react";
+import { GameParamsCxt, NewBotCxt } from "./App";
 
 export default function NewBot()
 {
@@ -70,7 +70,7 @@ export default function NewBot()
 
                 <div className="legend">
                     <span className="legend_min">| 5</span>
-                    <span className="legend_max">20 |</span>    
+                    <span className="legend_max">15 |</span>    
                 </div>
             </div>            
 

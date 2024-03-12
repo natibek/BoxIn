@@ -12,7 +12,7 @@ class Vertex {
 
 export default class Board{
 
-    constructor(num_players, size, names, old_board = null, old_board_1d = null, turn = 1)
+    constructor(num_players, size, names, old_board = null, old_board_1d = null, turn = 1, score = null, done = null, winner = null)
     {
         this.num_players = num_players; 
         this.size = size;
@@ -32,14 +32,20 @@ export default class Board{
         if (old_board_1d) this.box_1d = old_board_1d;
         else this.box_1d = new Array((size-1) * (size - 1)).fill(null);
         this.turn = turn;
-        this.score = Object.fromEntries(this.names.map(name => [name, 0]));
-        this.solved = false;
+        
+        if (score) this.score = score;
+        else this.score = Object.fromEntries(this.names.map(name => [name, 0]));
+        
+        if (done) this.done = done;
+        else this.done = false;
+        
+        if (winner) this.winner = winner;
+        else this.winner = [];
     }
 
     update_turn()
     {
         this.turn = this.turn === this.num_players ? 1 : this.turn += 1;
-        console.log("change turn");
     }
 
     legal_move(pos1_mat, pos2_mat)
@@ -75,7 +81,7 @@ export default class Board{
     }
 
 
-    is_box(pos1_mat, pos2_mat)
+    is_box(pos1_mat, pos2_mat, simulating = false)
     {
         const [row1, col1] = pos1_mat;
         const [row2, col2] = pos2_mat;
@@ -158,17 +164,16 @@ export default class Board{
         Object.entries(this.score).forEach(([key, value])=> {
             total += value
         });
-
-        return total === (this.size - 1) ** 2;
+        console.log(total)
+        console.log((this.size - 1)**2, "TOTAL")
+        
+        return total === ((this.size - 1) ** 2);
     }
 
     apply_move(pos1, pos2)
     {
-        const [row1, col1] = this.location(pos1)
-        const [row2, col2] = this.location(pos2)
-
-        console.log(row1, col1)
-        console.log(row2, col2)
+        const [row1, col1] = this.location(pos1);
+        const [row2, col2] = this.location(pos2);
 
         if (this.legal_move([row1, col1], [row2, col2])) 
         {
@@ -187,21 +192,79 @@ export default class Board{
         
         const state = this.is_box([row1, col1], [row2, col2]);
         if (!state) this.update_turn();
+
+        this.done = this.is_completed();
         
-        if (this.is_completed())
+        if (this.done)
         {
+            let max = 0;
+            
             Object.entries(this.score).forEach(([key, value]) => {
-                if (value > this.solved) this.score = key;
+                if (value > max) 
+                {
+                    this.winner = [key];
+                    max = value;
+                }
+                else if (value == max) this.winner.push(key);
             })
         }
-        
-        this.solved = this.is_completed();
+
         return state;
     }
     
-    static available_moves(board)
+    copy()
+    {
+        return new Board(this.num_players, this.size, this.names, this.board, this.old_board_1d, this.turn, this.score, this.done, this.winner);
+    }
+
+    simulate_move(row, col, dir)
+    {
+        if ( dir === "right" )
+        {
+            console.assert(col < this.size - 1);
+            let gained_points = 0;
+            
+            if ( row > 0 && (this.board[row][col].up && this.board[row][col + 1].up && this.board[row-1][col].right)) gained_points += 1;
+            // check up
+            if ( row < this.size - 1 && (this.board[row][col].down && this.board[row][col + 1].down && this.board[row+1][col].right)) gained_points += 1;
+            // check down
+            return gained_points;
+        }
+        
+        if ( dir === "down" )
+        {
+            console.assert(row < this.size - 1);
+            let gained_points = 0;
+            
+            if ( col > 0 && (this.board[row][col].left && this.board[row + 1][col].left && this.board[row][col - 1].down)) gained_points += 1;
+            // check left
+            if ( col < this.size - 1 && (this.board[row][col].right && this.board[row + 1][col].right && this.board[row][col + 1].down)) gained_points += 1;
+            // check right
+            return gained_points;
+        }
+    }
+
+    available_moves()
     {
         const move_dirs = []
+
+        // if not the last col, check right
+        // if not the last row, check down
+
+        for( let row = 0; row < this.size; row++ )
+        {
+            for ( let col = 0; col < this.size; col++)
+            {
+                if (col < this.size - 1)
+                {
+                    if (!this.board[row][col].right && !this.board[row][col + 1].left) move_dirs.push([row, col, 'right']);
+                }
+                if (row < this.size - 1)
+                {
+                    if (!this.board[row][col].down && !this.board[row + 1][col].up) move_dirs.push([row, col, 'down']);
+                }
+            }
+        }
     }
 
 }
