@@ -10,7 +10,7 @@ class Vertex {
     }
 }
 
-export default class Board{
+class Board{
 
     constructor(num_players, size, names, old_board = null, old_board_1d = null, turn = 1, score = null, done = null, winner = null)
     {
@@ -99,7 +99,7 @@ export default class Board{
                     let ind = row1 * (this.size - 1) + (col1 - 1);
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind)
-                    console.log('box left');
+                    // console.log('box left');
                     this.score[ this.names[this.turn - 1] ] += 1
                 }
             }
@@ -112,7 +112,7 @@ export default class Board{
                     let ind = row1 * (this.size - 1) + col1;
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind)
-                    console.log('box right');
+                    // console.log('box right');
                     this.score[ this.names[this.turn - 1] ] += 1
 
                 }
@@ -133,7 +133,7 @@ export default class Board{
                     let ind = (row1-1) * (this.size - 1) + col1
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind);
-                    console.log('box up')
+                    // console.log('box up')
                     this.score[ this.names[this.turn - 1] ] += 1
 
                 }
@@ -147,7 +147,7 @@ export default class Board{
                     let ind = row1 * (this.size - 1) + col1
                     this.box_1d[ind] = this.names[this.turn - 1];
                     state.push(ind);
-                    console.log('box down')
+                    // console.log('box down')
                     this.score[ this.names[this.turn - 1] ] += 1
                 }
             }
@@ -164,8 +164,8 @@ export default class Board{
         Object.entries(this.score).forEach(([key, value])=> {
             total += value
         });
-        console.log(total)
-        console.log((this.size - 1)**2, "TOTAL")
+        // console.log(total)
+        // console.log((this.size - 1)**2, "TOTAL")
         
         return total === ((this.size - 1) ** 2);
     }
@@ -205,7 +205,7 @@ export default class Board{
                     this.winner = [key];
                     max = value;
                 }
-                else if (value == max) this.winner.push(key);
+                else if (value === max) this.winner.push(key);
             })
         }
 
@@ -265,6 +265,10 @@ export default class Board{
                 }
             }
         }
+        // console.log(move_dirs);
+        return move_dirs;
     }
 
 }
+
+module.exports = { Board };

@@ -1,6 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Game from "./Game";
-import Multiplayer from "./Multiplayer";
 
 export default function Home(){
     const navigate = useNavigate();

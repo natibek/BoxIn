@@ -333,9 +333,11 @@ animation: shaking 0.5s ease-in-out;
 .right:hover,
 .left:hover
 {
-  border: none;
   background-color: var(--hover-color);
   cursor: pointer;
+  border: none;
+  border: 0px dashed black;
+
 }
 
 .top-left,

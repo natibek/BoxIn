@@ -54,7 +54,7 @@ export default function NewGame()
         const regex = /^[A-Z]$/;
         const input = e.target.value;
 
-        if ((input.match(regex) && !temp_names.includes(input)) || input == '')  
+        if ((input.match(regex) && !temp_names.includes(input)) || input === '')  
         {   
             let temp = temp_names.slice(0);
             temp[ind] = input;

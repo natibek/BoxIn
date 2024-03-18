@@ -4,7 +4,6 @@ import Nav from "./Nav";
 import Game from "./Game";
 import { NewGameCxt } from "./App";
 import NewGame from "./NewGame";
-import { Modal } from "react-bootstrap";
 import { useContext } from "react";
 
 export default function Play()

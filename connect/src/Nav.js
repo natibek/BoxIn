@@ -1,9 +1,8 @@
-import { Dropdown, Modal } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Vs} from './assets/against.svg';
 import { GameParamsCxt, NewBotCxt, NewGameCxt } from './App';
-import { useContext, useState } from 'react';
-import NewGame from './NewGame';
+import { useContext } from 'react';
 
 export default function Nav({ page }){
     const navigate = useNavigate();

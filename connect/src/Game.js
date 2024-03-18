@@ -37,14 +37,14 @@ export default function Game()
             
             setTimeout(() => {
                 
-                if (cached.done == true) 
+                if (cached.done === true) 
                 {
                     if ( cached.winner.length > 1 )
                     { 
                         const winners = cached.winner.join(', ')
-                        document.getElementById("turn").textContent = "Tie between: " +  cached.winner;
+                        document.getElementById("turn").textContent = "Tie between: " +  winners;
                     }
-                    else if ( cached.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + cached.winner;
+                    else if ( cached.winner.length === 1) document.getElementById("turn").textContent = "Winner: " + cached.winner;
                 }             
                 else document.getElementById("turn").textContent = cached.names[cached.turn - 1];
             }, 100);
@@ -129,9 +129,9 @@ export default function Game()
                 if ( game.winner.length > 1 )
                 { 
                     const winners = game.winner.join(', ')
-                    document.getElementById("turn").textContent = "Tie between: " + game.winner;
+                    document.getElementById("turn").textContent = "Tie between: " + winners;
                 }
-                else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
+                else if ( game.winner.length === 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
                 
             } 
             else document.getElementById("turn").textContent = game.names[game.turn - 1];

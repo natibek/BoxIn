@@ -12,7 +12,7 @@ class Node
     }
 }
 
-export default class Bot
+class Bot
 {
 
     constructor(strength)
@@ -23,54 +23,20 @@ export default class Bot
         
     }
 
-    start_bot(board)
-    {
-        if (this.level === 1)
-        {
-            let most_points = 0;
-            let best_move = null;
-            let best_dir = null;
-
-            for (const available_move of board.available_moves())
-            {
-                const [row, col, dir] = available_move;
-                const gained_points = bot_board.simulate_move(row, col, dir);
-                
-                if ( gained_points >= most_points )
-                {
-                    best_move = [row, col];
-                    best_dir = dir;
-                    most_points = gained_points;
-                }
-            }
-
-            const p1 = board.size * best_move[0] + best_move[1];
-            let p2;
-    
-            if (best_dir === "right") p2 = p1 + 1;
-            else p2 = p1 + board.size;
-
-            return [p1, p2]; 
-        }
-        else 
-        {
-            this.head = new Node(board, this.level);
-            this.gen_tree(this.head, board)
-
-        }
-    }
-
-
     gen_tree(node, board)
     {
         if ( node.depth >= this.level || board.done)
         {
             node.value = board.score['Bot'];
+            console.log("END", node.value)
+            console.log("SCORE", board.score)
             return
         }
 
-        for (const move of board.available_moves)
+        for (const move of board.available_moves())
         {
+            console.log("MOVES", move)
+            const [row, col, dir] = move;
             const p1 = board.size * row + col
             let p2;
     
@@ -90,56 +56,83 @@ export default class Bot
         }
     }
 
-    recommend_best()
+    recommend_best(board)
     {
-        let high_scores = []
-
-        for (const child of this.head.children)
+        if (this.level === 1)
         {
-            let stack = [child];
-            let move_score = [];
+            let best_moves = [];
+            let most_points = 0;
+            let best_dir = null;
+            let best_move;
 
-            while (stack)
+            for (const available_move of board.available_moves())
             {
-                let node = stack.pop();
-
-                if (node.children.length === 0) move_score.push(node.score);
-                else stack = [...stack, ...node.children];
+                const [row, col, dir] = available_move;
+                const gained_points = board.simulate_move(row, col, dir);
+                
+                if ( gained_points > most_points )
+                {
+                    best_moves = [ [row, col] ];
+                    best_dir = dir;
+                    most_points = gained_points;
+                }
+                else if ( gained_points === most_points )
+                {
+                    best_moves.push([row, col]);
+                    best_dir = dir;
+                }
             }
 
-            high_scores.push([child.origin_move, Math.max(move_score)]);
+            if ( best_moves.length > 1) best_move = best_moves[Math.floor(Math.random() * best_moves.length)];
+            else best_move = best_moves[0]
+
+            console.log("MOVES", best_moves);
+            console.log("BEST MOVE", best_move);
+
+            const p1 = board.size * best_move[0] + best_move[1];
+            let p2;
+    
+            if (best_dir === "right") p2 = p1 + 1;
+            else p2 = p1 + board.size;
+
+            return [p1, p2]; 
+        }
+        else
+        {
+            this.head = new Node(board, 0);
+            this.gen_tree(this.head, board);
+            
+            console.log("FINISHED TREE");
+
+            let high_scores = []
+
+            for (const child of this.head.children)
+            {
+                let stack = [child];
+                let move_score = [];
+    
+                while ( stack.length > 0 )
+                {
+                    let node = stack.pop();
+                    if (node.children.length === 0) move_score.push(node.score);
+                    else stack = [...stack, ...node.children];
+                }
+    
+                high_scores.push([child.origin_move, Math.max(move_score)]);
+            }
+    
+        
+            const best_move = high_scores.reduce((max, cur_move) => {
+                if (cur_move[1] > max[1]) return cur_move;
+                else return max;
+    
+              }, high_scores[0]);
+    
+            return best_move[0];
         }
 
-    
-        const best_move = high_scores.reduce((max, cur_move) => {
-            if (cur_move[1] > max[1]) return cur_move;
-            else return max;
-
-          }, high_scores[0]);
-
-        return best_move[0];
     }
 
 }
 
-
-//         score = []
-//         for child in self.head.children:
-//             stack = [child]
-//             move_score = []
-
-//             while stack:
-//                 node = stack.pop()
-
-//                 if node.children == []:
-//                     move_score.append(node.value)
-//                 else:
-//                     stack.extend(node.children)
-//                     # extends stack to include more children nodes
-
-//             score.append((child.move_made, max(move_score)))
-//             # stores the max score and the valid move that led to that state
-
-//         max_tuple = max(score, key=lambda x: x[1])
-//         # uses lambda and max function to find the move that has the highest score
-//         return max_tuple[0]
+module.exports = { Bot };
