@@ -2,7 +2,7 @@ class Node
 {
     constructor(board, depth)
     {
-        this.board = board;
+        this.board = board.copy();
         this.depth = depth;
         this.origin_move = null;
         this.value = null;
@@ -28,14 +28,14 @@ class Bot
         if ( node.depth >= this.level || board.done)
         {
             node.value = board.score['Bot'];
-            console.log("END", node.value)
-            console.log("SCORE", board.score)
+            // console.log("END", node.value)
+            // console.log("SCORE", board.score)
             return
         }
 
         for (const move of board.available_moves())
         {
-            console.log("MOVES", move)
+            // console.log("MOVES", move)
             const [row, col, dir] = move;
             const p1 = board.size * row + col
             let p2;
@@ -58,46 +58,46 @@ class Bot
 
     recommend_best(board)
     {
+        console.log(this.level)
         if (this.level === 1)
         {
             let best_moves = [];
             let most_points = 0;
-            let best_dir = null;
             let best_move;
 
             for (const available_move of board.available_moves())
             {
+                // console.log(available_move)
                 const [row, col, dir] = available_move;
                 const gained_points = board.simulate_move(row, col, dir);
                 
                 if ( gained_points > most_points )
                 {
-                    best_moves = [ [row, col] ];
-                    best_dir = dir;
+                    best_moves = [ [row, col, dir] ];
                     most_points = gained_points;
                 }
                 else if ( gained_points === most_points )
                 {
-                    best_moves.push([row, col]);
-                    best_dir = dir;
+                    best_moves.push([row, col, dir]);
+                    
                 }
             }
 
             if ( best_moves.length > 1) best_move = best_moves[Math.floor(Math.random() * best_moves.length)];
             else best_move = best_moves[0]
 
-            console.log("MOVES", best_moves);
-            console.log("BEST MOVE", best_move);
+            // console.log("MOVES", best_moves);
+            // console.log("BEST MOVE", best_move);
 
             const p1 = board.size * best_move[0] + best_move[1];
             let p2;
     
-            if (best_dir === "right") p2 = p1 + 1;
+            if (best_move[2] === "right") p2 = p1 + 1;
             else p2 = p1 + board.size;
 
             return [p1, p2]; 
         }
-        else
+        if (this.level !== 1)
         {
             this.head = new Node(board, 0);
             this.gen_tree(this.head, board);
@@ -135,4 +135,5 @@ class Bot
 
 }
 
-module.exports = { Bot };
+export default Bot;
+// module.exports = { Bot };

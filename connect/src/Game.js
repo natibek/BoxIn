@@ -29,7 +29,7 @@ export default function Game()
         {
             set_game_params( {size: cached.size, num_players: cached.num_players, names: cached.names} );
 
-            const new_board = new Board(cached.num_players, cached.size, cached.names, cached.board, cached.box_1d, cached.turn, cached.score, cached.done, cached.winner)
+            const new_board = new Board(cached.num_players, cached.size, cached.names, cached.board, cached.box_1d, cached.turn, cached.score, cached.done, cached.winner);
 
 
             set_game( new_board );
@@ -107,34 +107,39 @@ export default function Game()
             const ind = Number(e.target.parentNode.id);
             
             let [pos1, pos2, ..._] = get_row_col(ind, bar.className);
-
-            bar.style.backgroundColor = colorScheme[game.turn - 1];
-            bar.style.borderStyle = 'none';
-
+            const player = game.turn;
             const state = game.apply_move(pos1, pos2);
-            localStorage.setItem('board', JSON.stringify(game));
-            r.style.setProperty('--hover-color', colorScheme[game.turn - 1])
 
-            if (typeof state === 'object' && state.length > 0)  
-            {   
-                for (let close_dir of state)
-                {
-                    const text = document.createTextNode(game.names[game.turn - 1]);
-                    document.getElementById(String(close_dir)).appendChild(text);      
+            if (state !== false)
+            {
+                bar.style.backgroundColor = colorScheme[player - 1];
+                bar.style.borderStyle = 'none';
+    
+                localStorage.setItem('board', JSON.stringify(game));
+                r.style.setProperty('--hover-color', colorScheme[game.turn - 1])
+    
+                if (state.length > 0)  
+                {   
+                    for (let close_dir of state)
+                    {
+                        const text = document.createTextNode(game.names[game.turn - 1]);
+                        document.getElementById(String(close_dir)).appendChild(text);      
+                    }
+                    
                 }
-                
+    
+                if (game.done){
+                    if ( game.winner.length > 1 )
+                    { 
+                        const winners = game.winner.join(', ')
+                        document.getElementById("turn").textContent = "Tie between: " + winners;
+                    }
+                    else if ( game.winner.length === 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
+                    
+                } 
+                else document.getElementById("turn").textContent = game.names[game.turn - 1];
             }
 
-            if (game.done){
-                if ( game.winner.length > 1 )
-                { 
-                    const winners = game.winner.join(', ')
-                    document.getElementById("turn").textContent = "Tie between: " + winners;
-                }
-                else if ( game.winner.length === 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
-                
-            } 
-            else document.getElementById("turn").textContent = game.names[game.turn - 1];
         }
     };
 

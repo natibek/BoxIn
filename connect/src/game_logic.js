@@ -41,6 +41,7 @@ class Board{
         
         if (winner) this.winner = winner;
         else this.winner = [];
+
     }
 
     update_turn()
@@ -117,8 +118,7 @@ class Board{
 
                 }
             }
-            if (left_boxed || right_boxed) return state;
-            return false;
+            return state;
         } 
 
         else if(this.is_hori(pos1_mat, pos2_mat))
@@ -151,9 +151,7 @@ class Board{
                     this.score[ this.names[this.turn - 1] ] += 1
                 }
             }
-
-            if (up_boxed || down_boxed) return state;
-            return false;
+            return state;
         }
     }
 
@@ -191,7 +189,7 @@ class Board{
         else return false;
         
         const state = this.is_box([row1, col1], [row2, col2]);
-        if (!state) this.update_turn();
+        if (state.length === 0) this.update_turn();
 
         this.done = this.is_completed();
         
@@ -271,4 +269,5 @@ class Board{
 
 }
 
-module.exports = { Board };
+export default Board
+// module.exports = { Board };

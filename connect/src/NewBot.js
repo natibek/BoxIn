@@ -1,19 +1,19 @@
 
 import { useState, useContext } from "react";
-import { GameParamsCxt, NewBotCxt } from "./App";
+import { BotParamsCxt, GameParamsCxt, NewBotCxt } from "./App";
 
 export default function NewBot()
 {
-    const [ bot_strength, set_bot_strength ] = useState(1);
+    const [ bot_strength, set_bot_strength ] = useState(0);
     const [ size, set_size ] = useState(5);
-    const { game_params, set_game_params } = useContext(GameParamsCxt);
+    const { bot_params, set_bot_params } = useContext(BotParamsCxt);
     const { new_bot, set_new_bot } = useContext(NewBotCxt);
 
     const handleGameSetting = () => 
     {    
-        localStorage.setItem('bot', JSON.stringify(null));
+        localStorage.setItem('bot_board', JSON.stringify(null));
         
-        set_game_params({
+        set_bot_params({
                 size: Number(size),
                 bot_strength: Number(bot_strength)
         });
@@ -45,7 +45,7 @@ export default function NewBot()
                     onChange={ (e) => { set_bot_strength(e.target.value) } } 
                     value={ bot_strength }
                     type="range" 
-                    min="1" max="3" step="1" 
+                    min="0" max="2" step="1" 
                     list="num_markers"/>
 
                 <div className="legend">

@@ -1,6 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BotParamsCxt, NewBotCxt } from "./App";
-import Bot from "./Bot";
+import Bot from "./bot_logic";
+import Board from "./game_logic";
 
 const colorScheme = [ "rgb(107, 170, 255)", "#EEE8A9" ];
 
@@ -14,88 +15,186 @@ export default function BotGame()
     const [ bot, set_bot ] = useState();
 
     useEffect(() => {
-        const cached = JSON.parse(localStorage.getItem('bot'));
+        const cached = JSON.parse(localStorage.getItem('bot_board'));
+        const bot_strength = JSON.parse(localStorage.getItem('bot_strength'));
         console.log(bot_params, cached)
 
         if ( cached )
         {
             set_bot_params( {size: cached.size, bot_strength: cached.bot_strength} );
 
-            const new_board = new Board(2, cached.size, ["Player", "Bot"], cached.board, cached.box_1d, cached.turn);
+            const new_board = new Board(2, cached.size, ["You", "Bot"], cached.board, cached.box_1d, cached.turn, cached.score, cached.done, cached.winner);
             set_game( new_board );
 
-            set_bot( new Bot(cached.bot_strength) );
+            set_bot( new Bot(bot_strength) );
 
             r.style.setProperty('--hover-color', colorScheme[cached.turn - 1]);
 
             setTimeout(() => {
-                document.getElementById("turn").textContent = cached.names[cached.turn - 1];
-            }, 100);
-            console.log('CACHED GAME');
-        }
-        else if (bot_params.size && bot_params.bot_strength)
-        {
-            let new_board = new Board( 2, bot_params.size, ["Player", "Bot"] );
-            set_game( new_board );
+                if (new_board.done){
+                    if ( new_board.winner.length > 1 )
+                    { 
+                        const winners = new_board.winner.join(', ')
+                        document.getElementById("turn").textContent = "Tie between: " + winners;
+                    }
+                    else if ( new_board.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + new_board.winner;
+                    
+                } 
+                else if (new_board.turn === 1)
+                {
+                    document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];
+                    bot_move();
+                    r.style.setProperty('--hover-color', colorScheme[cached.turn - 1]);
+                    localStorage.setItem('bot_board', JSON.stringify(new_board));   
+                }
+                else document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];
+                
 
+            }, 100);
+
+            console.log('CACHED BOT GAME');
+        }
+        else if (bot_params.size)
+        {
+            console.log("HERE")
+            const new_board = new Board( 2, bot_params.size, ["You", "Bot"] );
+            set_game( new_board );
             set_bot( new Bot(bot_params.bot_strength) );
 
             r.style.setProperty('--hover-color', colorScheme[0]);
-            localStorage.setItem('bot', JSON.stringify(new_board));
-
+            localStorage.setItem('bot_board', JSON.stringify(new_board));
+            localStorage.setItem('bot_strength', JSON.stringify(bot_params.bot_strength));   
             setTimeout(() => {
-                if (game.solved){
-                    if ( game.winner.length > 1 )
-                    { 
-                        const winners = game.winner.join(', ')
-                        document.getElementById("turn").textContent = "Tie between: " + game.winner;
-                    }
-                    else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
-                    
-                } 
-                else document.getElementById("turn").textContent = game.names[game.turn - 1];
-
+                document.getElementById("turn").textContent = new_board.names[new_board.turn - 1];
             }, 100);
-            console.log('NEW GAME');            
+
+            console.log('NEW BOT GAME');            
         }
         else set_new_bot( true );
 
     }, []);
 
-    // useEffect(() => {
-
-    //     set_game(null);
-    //     if (bot_params.size && bot_params.bot_strength)
-    //     {
-    //         let new_board = new Board( 2, bot_params.size, ["Player", "Bot"] );
-
-    //         set_game( new_board );
-    //         r.style.setProperty('--hover-color', colorScheme[0]);
-
-    //         localStorage.setItem('bot', JSON.stringify(new_board));
-    //         setTimeout(() => {
-    //             if (game.solved){
-    //                 if ( game.winner.length > 1 )
-    //                 { 
-    //                     const winners = game.winner.join(', ')
-    //                     document.getElementById("turn").textContent = "Tie between: " + game.winner;
-    //                 }
-    //                 else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
-                    
-    //             } 
-    //             else document.getElementById("turn").textContent = game.names[game.turn - 1];
-
-    //         }, 100);          
-    //     }
-    //     else set_new_bot( true );
-
-    // }, [bot_params]);
-
     const is_first_col = (ind) =>  ind % (bot_params.size - 1) === 0;
     const is_last_row = (ind) => Math.floor(ind / (bot_params.size - 1)) === (bot_params.size - 2);
     
-    const bot_move = () => {
-        const move = bot.bet_move();
+    function bot_move()
+    {
+        if (bot)
+        {
+            const [ p1, p2 ] = bot.recommend_best(game);
+            const state = game.apply_move(p1, p2);
+
+            if (state.length > 0)  
+            {   
+                for (let close_dir of state)
+                {
+                    const text = document.createTextNode(game.names[game.turn - 1]);
+                    document.getElementById(String(close_dir)).appendChild(text);      
+                }
+                
+            }
+            
+            localStorage.setItem('bot_board', JSON.stringify(game));
+
+            // console.log("HERE", p1, p2);
+    
+            const [row1, col1] = game.location(p1);
+            const [row2, col2] = game.location(p2);
+    
+            // console.log(row1, col1)
+            // console.log(row2, col2)
+    
+            if (game.is_vert([row1, col1], [row2, col2]))
+            {
+                let ind, class_name;
+    
+  
+                if (col1 === game.size - 1)
+                {
+                    ind = (row1) * (game.size - 1) + (col1 - 1);
+                    class_name = "right";
+                }
+                else if (col1 === game.size - 2)
+                {
+                    ind = (row1) * (game.size - 1) + (col1 - 1);
+                    class_name = "right";
+                }
+                else if (col1 > 0) 
+                {
+                    ind = (row1 * (game.size - 1)) + (col1 - 1);
+                    class_name = 'right';
+                }
+                else 
+                {
+                    ind = (row1 * (game.size - 1)) + col1;
+                    class_name = 'left';
+                }
+                const center = document.getElementById(String(ind));
+                // console.log(ind, class_name, center);
+                // console.log(center.childNodes)
+    
+                for (const child of center.childNodes)
+                {
+                    if (child.className === class_name)
+                    {
+                        child.style.backgroundColor = colorScheme[1];
+                        child.style.borderStyle = 'none';
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                let ind, class_name;
+    
+                if (row1 !== game.size - 1) // not the last column
+                {
+                    ind = (row1 * (game.size - 1)) + col1;
+                    class_name = 'up';
+                }
+                else
+                {
+                    ind = (row1 - 1) * (game.size - 1) + (col1);
+                    class_name = "down";
+                }
+                const center = document.getElementById(String(ind));
+                // console.log(ind, class_name, center);
+                // console.log(center.childNodes)
+    
+                for (const child of center.childNodes)
+                {
+                    if (child.className === class_name)
+                    {
+                        child.style.backgroundColor = colorScheme[1];
+                        child.style.borderStyle = 'none';
+                        break;
+                    }
+                }
+            }
+    
+            if (game.done){
+                if ( game.winner.length > 1 )
+                { 
+                    const winners = game.winner.join(', ')
+                    document.getElementById("turn").textContent = "Tie between: " + winners;
+                }
+                else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
+                
+            } 
+            else if (game.turn === 2) 
+            {
+                setTimeout(() => {
+                    bot_move();                    
+                }, 1000);
+            }
+            else 
+            {
+                document.getElementById("turn").textContent = game.names[0];
+                r.style.setProperty('--hover-color', colorScheme[0]);
+                console.log("scores", game.done, game.score);
+            }
+        }
+
     }
 
     const get_row_col = (ind, side) => {
@@ -131,43 +230,53 @@ export default function BotGame()
     const handleClick = (e) => {
         const bar = e.target;
         
-        if (bar.style.backgroundColor === "")
+        if (bar.style.backgroundColor === "" && game.turn === 1)
         {
             const ind = Number(e.target.parentNode.id);
             
             let [pos1, pos2, ..._] = get_row_col(ind, bar.className)
 
-            console.log(pos1, pos2, "pos");
-
             bar.style.backgroundColor = colorScheme[game.turn - 1];
             bar.style.borderStyle = 'none';
 
             const state = game.apply_move(pos1, pos2);
-            localStorage.setItem('board', JSON.stringify(game));
-            r.style.setProperty('--hover-color', colorScheme[game.turn - 1])
+            localStorage.setItem('bot_board', JSON.stringify(game));
 
-            if (typeof state === 'object' && state.length > 0)  
+            if (state.length > 0)    
             {   
                 for (let close_dir of state)
                 {
-                    console.log(bot_params.names[game.turn - 1], "BOX")
                     const text = document.createTextNode(game.names[game.turn - 1]);
                     document.getElementById(String(close_dir)).appendChild(text);      
                 }
                 
             }
 
-            console.log("scores", game.solved, game.score);
-            if (game.solved){
+            console.log("scores", game.done, game.score);
+            if (game.done){
                 if ( game.winner.length > 1 )
                 { 
                     const winners = game.winner.join(', ')
-                    document.getElementById("turn").textContent = "Tie between: " + game.winner;
+                    document.getElementById("turn").textContent = "Tie between: " + winners;
                 }
                 else if ( game.winner.length == 1) document.getElementById("turn").textContent = "Winner: " + game.winner;
                 
             } 
-            else document.getElementById("turn").textContent = game.names[game.turn - 1];
+            else if (game.turn === 2)
+            {
+                document.getElementById("turn").textContent = game.names[game.turn - 1];
+                r.style.setProperty('--hover-color', colorScheme[1]);
+                setTimeout(() => {
+                    bot_move();
+                }, 1000);
+
+                localStorage.setItem('bot_board', JSON.stringify(game));
+            }
+            else 
+            {
+                document.getElementById("turn").textContent = game.names[game.turn - 1];
+                r.style.setProperty('--hover-color', colorScheme[0]);
+            }
         }
     };
 
