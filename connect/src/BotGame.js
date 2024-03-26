@@ -82,8 +82,10 @@ export default function BotGame()
         if (bot)
         {
             const [ p1, p2 ] = bot.recommend_best(game);
+            console.log(game.board)
             const state = game.apply_move(p1, p2);
 
+            console.log(state);
             if (state.length > 0)  
             {   
                 for (let close_dir of state)
@@ -171,7 +173,8 @@ export default function BotGame()
                     }
                 }
             }
-    
+            
+            console.log(game)
             if (game.done){
                 if ( game.winner.length > 1 )
                 { 
@@ -184,7 +187,7 @@ export default function BotGame()
             else if (game.turn === 2) 
             {
                 setTimeout(() => {
-                    bot_move();                    
+                    bot_move();                   
                 }, 1000);
             }
             else 

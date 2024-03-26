@@ -172,6 +172,7 @@ class Board{
     {
         const [row1, col1] = this.location(pos1);
         const [row2, col2] = this.location(pos2);
+        // console.log(pos1, pos2, this.turn)
 
         if (this.legal_move([row1, col1], [row2, col2])) 
         {
@@ -189,7 +190,7 @@ class Board{
         else return false;
         
         const state = this.is_box([row1, col1], [row2, col2]);
-        if (state.length === 0) this.update_turn();
+        if (state.length === 0 && state !== false) this.update_turn();
 
         this.done = this.is_completed();
         
@@ -212,7 +213,8 @@ class Board{
     
     copy()
     {
-        return new Board(this.num_players, this.size, this.names, this.board, this.old_board_1d, this.turn, this.score, this.done, this.winner);
+        const new_board = new this.constructor(this.num_players, this.size, this.names, JSON.parse(JSON.stringify(this.board)), JSON.parse(JSON.stringify(this.box_1d)), this.turn, JSON.parse(JSON.stringify(this.score)), this.done, this.winner);
+        return new_board;
     }
 
     simulate_move(row, col, dir)
@@ -269,5 +271,5 @@ class Board{
 
 }
 
-export default Board
+export default Board;
 // module.exports = { Board };

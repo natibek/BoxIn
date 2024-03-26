@@ -20,7 +20,7 @@ export default function Home(){
 
             <div className="fs-2 pb-4 pt-2">BoxIn</div>
             <button onClick={ () => { navigate("/play")  }} className="button w-50 py-2 my-1" style={{minWidth: "125px", height: "fit-content"}}> Against Friends </button>            
-            <button onClick={ () => { }} className="button w-50 py-2 my-1" style={{minWidth: "125px", height: "fit-content"}}> Against Bot </button>           
+            <button onClick={ () => { navigate("/bot") }} className="button w-50 py-2 my-1" style={{minWidth: "125px", height: "fit-content"}}> Against Bot </button>           
             <button onClick={ () => { navigate("/multiplayer")} } className="button w-50 py-2 my-1" style={{minWidth: "125px", height: "fit-content"}}> Online Multiplayer </button>            
             <button onClick={ handleInstructions } className="button w-50 py-2 my-1" style={{minWidth: "125px",height: "fit-content"}}> Instructions </button>                       
 
