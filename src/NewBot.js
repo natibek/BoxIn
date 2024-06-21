@@ -1,6 +1,13 @@
 
 import { useState, useContext } from "react";
 import { BotParamsCxt, GameParamsCxt, NewBotCxt } from "./App";
+import { Modal } from "react-bootstrap";
+
+const mapBotStrength = {
+	0: "Easy Level",
+	1: "Medium Level",
+	2: "Hard Level",
+}
 
 export default function NewBot()
 {
@@ -8,11 +15,17 @@ export default function NewBot()
     const [ size, set_size ] = useState(5);
     const { bot_params, set_bot_params } = useContext(BotParamsCxt);
     const { new_bot, set_new_bot } = useContext(NewBotCxt);
+    const [ modalShow, setModalShow ] = useState(false);
 
     const handleGameSetting = () => 
     {    
         localStorage.setItem('bot_board', JSON.stringify(null));
-        
+       	
+	if (bot_strength > 0) {
+		handleModalShow();
+		return;
+	}
+
         set_bot_params({
                 size: Number(size),
                 bot_strength: Number(bot_strength)
@@ -20,7 +33,7 @@ export default function NewBot()
 
         set_new_bot(false);        
     };
-
+    
     const handleSizeInput = (e) => 
     {
         const input = e.target.value;
@@ -33,7 +46,12 @@ export default function NewBot()
         display_element.style.left =  `calc(${pos}% + ${offset}px)`;
     };
 
+    function handleModalShow(){
+ 	setModalShow(!modalShow);
+    }
+
     return ( 
+	<>
         <div className="flex_col_center bg-white shadow-lg gap_20 px-2 py-5 m-4 rounded border border-1 border-black" style={{minHeight : '150px', width : '400px'}}>               
             <h3 className="text-center "> Bot Setup </h3>
             
@@ -42,7 +60,7 @@ export default function NewBot()
                 
                 <input 
                     id="num_players_input" 
-                    onChange={ (e) => { set_bot_strength(e.target.value) } } 
+                    onChange={ (e) => set_bot_strength(e.target.value) } 
                     value={ bot_strength }
                     type="range" 
                     min="0" max="2" step="1" 
@@ -76,5 +94,14 @@ export default function NewBot()
 
             <button className="button bg-light-grey rounded px-5 py-2 mt-3" onClick={ handleGameSetting }>Play</button>        
         </div>                            
+	<Modal show = {modalShow} onHide = {handleModalShow} centered>
+	    <Modal.Header closeButton>
+	    </Modal.Header>
+	    <Modal.Body className= "d-flex justify-content-center">
+	    	<h4>{mapBotStrength[bot_strength]} bot coming out soon.</h4>
+	    </Modal.Body>
+
+	</Modal>
+	</>
     );
 }
