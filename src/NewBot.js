@@ -98,7 +98,7 @@ export default function NewBot()
 	    <Modal.Header closeButton>
 	    </Modal.Header>
 	    <Modal.Body className= "d-flex justify-content-center">
-	    	<h4>{mapBotStrength[bot_strength]} bot coming out soon.</h4>
+	    	<h4>{mapBotStrength[bot_strength]} bot coming soon.</h4>
 	    </Modal.Body>
 
 	</Modal>
